@@ -80,7 +80,7 @@ routes_nuri   <- routes %>% filter(index %in% c(72:80))
 routes_falls  <- routes %>% filter(index==454)
 routes_cycle  <- routes %>% filter(Type=="Cycling")
 routes_toconf <- routes %>% filter(index==380)
-routes        %<>% filter(Type=="Walking" & !index %in% c(72:80,184:186,380,400,454))
+routes        %<>% filter(Type=="Walking" & !index %in% c(46,72:80,184:186,380,400,454))
 
 ## longest walks (possible errors)
 routes %>% group_by(index) %>% summarise(n_distinct(Distance..km.)) -> num_dists
@@ -108,6 +108,7 @@ routes$closest_route <- sapply(1:nrow(routes),
 
 
 # Plot Everything
+# for (r in 1:2) {
 for (r in 1:nrow(clusters)) {
   
   locName <- row.names(clusters)[r]
@@ -130,15 +131,15 @@ for (r in 1:nrow(clusters)) {
                  WORK=15
                  )
   
-  if(!file.exists(file.path("./data",sprintf("%d-%s-map.Rdata", r, locName)))) {
+  if(!file.exists(file.path(".",sprintf("%d-%s-map.Rdata", r, locName)))) {
     thisMap <- get_map(location=rev(center),
                        color = "color",
                        source = "google",
                        maptype = "roadmap",
                        zoom = zoom)
-    save(thisMap, file=file.path("./data",sprintf("%d-%s-map.Rdata", r, locName)))
-  } else {
-    load(file=file.path("./data",sprintf("%d-%s-map.Rdata", r, locName)))
+    save(thisMap, file=file.path(".",sprintf("%d-%s-map.Rdata", r, locName)))
+  } else {C
+    load(file=file.path(".",sprintf("%d-%s-map.Rdata", r, locName)))
   }
   
   g <- ggmap(thisMap,
