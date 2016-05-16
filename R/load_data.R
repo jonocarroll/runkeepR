@@ -1,11 +1,11 @@
-load_runs <- function(rundir) {
+load_runs <- function(gpxdir, save=TRUE) {
   
   # if(!file.exists(file.path("./data","routes.Rdata"))) {
     
     # https://gist.github.com/danielecook/6c555937144d4955073b
     
     # GPX files downloaded from Runkeeper
-    files <- dir(file.path(rundir), pattern="\\.gpx", full.names=TRUE)
+    files <- dir(file.path(gpxdir), pattern="\\.gpx", full.names=TRUE)
     # files <- dir(file.path("./data"), pattern="\\.gpx", full.names=TRUE)
     
     message("Loading files:")
@@ -37,7 +37,7 @@ load_runs <- function(rundir) {
     # routes <- data.frame(cbind(index, latitude, longitude, file))
     
     # Because the routes dataframe takes a while to generate for some folks - save it!
-    # save(routes, file=file.path("./data","routes.Rdata"))
+    if(save) save(routes, file=file.path(gpxdir, "routes.Rdata"))
   # } else {
   #   # Use to load as needed.
   #   load(file.path("./data","routes.Rdata"))
