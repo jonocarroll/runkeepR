@@ -1,24 +1,24 @@
-\name{anRpackage-package}
-\alias{anRpackage-package}
-\alias{anRpackage}
+\name{runkeepR-package}
+\alias{runkeepR-package}
+\alias{runkeepR}
 \docType{package}
 \title{
-\packageTitle{anRpackage}
+\packageTitle{runkeepR}
 }
 \description{
-\packageDescription{anRpackage}
+\packageDescription{runkeepR}
 }
 \details{
 
 The DESCRIPTION file:
-\packageDESCRIPTION{anRpackage}
-\packageIndices{anRpackage}
+\packageDESCRIPTION{runkeepR}
+\packageIndices{runkeepR}
 ~~ An overview of how to use the package, including the most important functions ~~
 }
 \author{
-\packageAuthor{anRpackage}
+\packageAuthor{J. Carroll}
 
-Maintainer: \packageMaintainer{anRpackage}
+Maintainer: \packageMaintainer{J. Carroll}
 }
 \references{
 ~~ Literature or other references for background information ~~

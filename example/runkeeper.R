@@ -22,7 +22,9 @@ setwd("~/Dropbox/R/runkeeper/")
 num_locations <- 3
 
 if(!file.exists(file.path("./data","routes.Rdata"))) {
-
+  
+  # https://gist.github.com/danielecook/6c555937144d4955073b
+  
   # GPX files downloaded from Runkeeper
   files <- dir(file.path("./data"), pattern="\\.gpx", full.names=TRUE)
   
