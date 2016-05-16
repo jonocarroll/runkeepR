@@ -1,0 +1,9 @@
+Package: runkeepR
+Type: Package
+Title: Extract, analyse, and plot Runkeeper(TM) data
+Version: 0.1
+Date: 2016-05-16
+Author: J. Carroll [aut, cre]
+Maintainer: J. Carroll <jono@jcarroll.com.au>
+Description: More about what it does (maybe more than one line)
+License: What license is it under?
