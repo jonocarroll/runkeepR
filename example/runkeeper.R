@@ -182,3 +182,182 @@ png("timeline_dist.png", width=1200, height=1200, res=128, pointsize=18)
 unique_routes %$% plot(x=newDate, y=Distance..km., type="s", col="#31a4d9", xlab="Date", ylab="Distance [km]", 
                        main=paste0("Distances Walked over Time\n",unique_routes %$% min(newDate)," --- ",unique_routes %$% max(newDate)))
 dev.off()
+
+
+
+
+
+### plot routes within x km of geocode
+
+Adelaide <- geocode("Adelaide, Australia")
+
+within_R <- 5
+zoom <- 13
+# routes_Adl <- routes %>% filter(acos(sin(latitude)*sin(Adelaide$lat) + cos(latitude)*cos(Adelaide$lat)*cos(Adelaide$lon-longitude)) * 6371L < within_R)
+# routes_Adl <- routes %>% filter(acos(sin(Adelaide$lat*pi/180)*sin(latitude*pi/180) + cos(Adelaide$lat*pi/180)*cos(latitude*pi/180)*cos(longitude*pi/180-Adelaide$lon*pi/180)) * 6371L < within_R)
+# routes_Adl <- routes %>% mutate(dist=geosphere::distHaversine(Adelaide, data.frame(longitude, latitude))) %>% filter(dist < 1000L*within_R)
+
+## search along latitude for a point at dist R [m] from the centre
+radfunLAT <- function(p, r, centre) {
+  return(( geosphere::distHaversine(centre, c(centre$lon, p)) - r)^2)
+}
+radfunLON <- function(p, r, centre) {
+  return((geosphere::distHaversine(centre, c(p, centre$lat)) - r)^2)
+}
+rsolvedLAT <- optimise(radfunLAT, interval=c(-90,90), within_R*1000L, Adelaide)
+rsolvedLON <- optimise(radfunLON, interval=c(-180,180), within_R*1000L, Adelaide)
+
+# g <- g + annotate("path",
+#                   x=c(Adelaide$lon-abs(rsolvedLON$minimum - Adelaide$lon),Adelaide$lon+abs(rsolvedLON$minimum - Adelaide$lon)),
+#                   y=c(Adelaide$lat-abs(rsolvedLAT$minimum - Adelaide$lat),Adelaide$lat-abs(rsolvedLAT$minimum - Adelaide$lat)))
+# g <- g + annotate("path",
+#                   x=c(Adelaide$lon-abs(rsolvedLON$minimum - Adelaide$lon),Adelaide$lon+abs(rsolvedLON$minimum - Adelaide$lon)),
+#                   y=c(Adelaide$lat+abs(rsolvedLAT$minimum - Adelaide$lat),Adelaide$lat+abs(rsolvedLAT$minimum - Adelaide$lat)))
+# g <- g + annotate("path",
+#                   x=c(Adelaide$lon-abs(rsolvedLON$minimum - Adelaide$lon),Adelaide$lon-abs(rsolvedLON$minimum - Adelaide$lon)),
+#                   y=c(Adelaide$lat-abs(rsolvedLAT$minimum - Adelaide$lat),Adelaide$lat+abs(rsolvedLAT$minimum - Adelaide$lat)))
+# g <- g + annotate("path",
+#                   x=c(Adelaide$lon+abs(rsolvedLON$minimum - Adelaide$lon),Adelaide$lon+abs(rsolvedLON$minimum - Adelaide$lon)),
+#                   y=c(Adelaide$lat-abs(rsolvedLAT$minimum - Adelaide$lat),Adelaide$lat+abs(rsolvedLAT$minimum - Adelaide$lat)))
+
+# my.shape <- matrix(runif(10), 5)
+my.shape <- data.frame(x=c(Adelaide$lon-abs(rsolvedLON$minimum - Adelaide$lon),Adelaide$lon+abs(rsolvedLON$minimum - Adelaide$lon)),
+                       y=c(Adelaide$lat-abs(rsolvedLAT$minimum - Adelaide$lat),Adelaide$lat+abs(rsolvedLAT$minimum - Adelaide$lat)))
+my.points <- routes %>% select(longitude, latitude)
+routes_Adl <- routes %>% mutate_(inside=1:nrow(my.points) %in% inpip(my.points, my.shape)) %>% filter(isTRUE(inside))
+
+routes_Adl <- routes %>% filter(longitude > my.shape$x[1] & longitude < my.shape$x[2] &
+                                latitude > my.shape$y[1] & latitude < my.shape$y[2])
+
+
+## find points on the circle at that radius
+
+
+routeIds <- unique(routes_Adl$index)
+
+# Map the projected points
+png(sprintf("%d-%s-all-map.png", r, "Adelaide"), width=1280, height=1280)
+
+lat <- range(routes_Adl$latitude)  
+lon <- range(routes_Adl$longitude) 
+center = c(mean(lon), mean(lat))
+# center <- Adelaide
+
+if(!file.exists(file.path(".",sprintf("%d-%s-map.Rdata", r, "Adelaide")))) {
+  thisMap <- get_map(location=center,
+                     color = "color",
+                     source = "google",
+                     maptype = "roadmap",
+                     zoom = zoom)
+  save(thisMap, file=file.path(".",sprintf("%d-%s-map.Rdata", r, "Adelaide")))
+} else {
+  load(file=file.path(".",sprintf("%d-%s-map.Rdata", r, "Adelaide")))
+}
+
+g <- ggmap(thisMap,
+           extent = "device",
+           ylab = "Latitude",
+           xlab = "Longitude") + 
+  # labs(title=locName) + 
+  theme(legend.position="none")
+
+g <- g + annotate("rect", 
+                  xmin=attr(thisMap, "bb")$ll.lon, 
+                  xmax=attr(thisMap, "bb")$ur.lon, 
+                  ymin=attr(thisMap, "bb")$ll.lat, 
+                  ymax=attr(thisMap, "bb")$ur.lat, 
+                  fill="white", alpha=0.85)
+
+for (i in routeIds) {
+  currRoute <- subset(routes_Adl, index==i)
+  g <- g + geom_path(aes(y=latitude, x=longitude), color=sample(brewer.pal(11, "Spectral"), 1), data=currRoute, lwd=0.6)
+}
+
+polygon <- expand.grid(my.shape)
+
+g <- g + geom_point(data=polygon, aes(x=x, y=y), size=2)
+g <- g + geom_path(data=polygon %>% filter(x==min(x)), aes(x=x, y=y))
+g <- g + geom_path(data=polygon %>% filter(x==max(x)), aes(x=x, y=y))
+g <- g + geom_path(data=polygon %>% filter(y==min(y)), aes(x=x, y=y))
+g <- g + geom_path(data=polygon %>% filter(y==max(y)), aes(x=x, y=y))
+                  
+                  # x=Adelaide$lon+abs(rsolvedLON$minimum - Adelaide$lon)*cos(seq(0,2*pi,length.out=100)),
+                  # y=Adelaide$lat+abs(rsolvedLAT$minimum - Adelaide$lat)*sin(seq(0,2*pi,length.out=100)))
+# g <- g + annotate("path",
+#                   x=Adelaide$lon+abs(rsolved$minimum - Adelaide$lat)*cos(seq(0,2*pi,length.out=100)),
+#                   y=Adelaide$lat+abs(rsolved$minimum - Adelaide$lat)*sin(seq(0,2*pi,length.out=100)))
+
+print(g)
+
+
+dev.off()
+
+
+
+
+## convert routes to a SpatialLinesDataFrame
+## https://rpubs.com/walkerke/points_to_line
+library(sp)
+library(maptools)
+
+points_to_line <- function(data, long, lat, id_field = NULL, sort_field = NULL) {
+  
+  # Convert to SpatialPointsDataFrame
+  coordinates(data) <- c(long, lat)
+  
+  # If there is a sort field...
+  if (!is.null(sort_field)) {
+    if (!is.null(id_field)) {
+      data <- data[order(data[[id_field]], data[[sort_field]]), ]
+    } else {
+      data <- data[order(data[[sort_field]]), ]
+    }
+  }
+  
+  # If there is only one path...
+  if (is.null(id_field)) {
+    
+    lines <- SpatialLines(list(Lines(list(Line(data)), "id")))
+    
+    return(lines)
+    
+    # Now, if we have multiple lines...
+  } else if (!is.null(id_field)) {  
+    
+    # Split into a list by ID field
+    paths <- sp::split(data, data[[id_field]])
+    
+    sp_lines <- SpatialLines(list(Lines(list(Line(paths[[1]])), "line1")))
+    
+    # I like for loops, what can I say...
+    for (p in 2:length(paths)) {
+      id <- paste0("line", as.character(p))
+      l <- SpatialLines(list(Lines(list(Line(paths[[p]])), id)))
+      sp_lines <- spRbind(sp_lines, l)
+    }
+    
+    return(sp_lines)
+  }
+}
+
+routes_lines <- points_to_line(data = routes, 
+                               long = "longitude", 
+                               lat = "latitude", 
+                               id_field = "index")
+
+library(leaflet)
+leaflet(data = routes_lines) %>%
+  addTiles() %>%
+  addPolylines()
+
+## sample data: line lengths
+library(rgeos)
+df <- data.frame(len = sapply(1:length(routes_lines), function(i) gLength(routes_lines[i, ])))
+rownames(df) <- sapply(1:length(routes_lines), function(i) routes_lines@lines[[i]]@ID)
+
+
+## SpatialLines to SpatialLinesDataFrame
+routes_sldf <- SpatialLinesDataFrame(routes_lines, data = df)
+proj4string(routes_sldf) <- CRS("+proj=longlat +init=epsg:3113 +lat_0=-28 +lon_0=153 +k=0.99999 +x_0=50000 +y_0=100000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0
++units=m +no_defs")
+save(routes_sldf, file="./example/leaflet_test/data/routes_sldf.rds")
