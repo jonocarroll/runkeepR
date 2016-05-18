@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/jonocarroll/runkeepR.svg?branch=master)](https://travis-ci.org/jonocarroll/runkeepR)
+
 # <img src="https://d2b4ufapzmnxpw.cloudfront.net/build/13556/static/web/images/rk_app_logo_blue_150x142.png"> runkeepR
 
 Extract, plot, and analyse Runkeeper(TM) data.

@@ -24,6 +24,7 @@ before_install:
   
 install:
 #  - ./travis-tool.sh install_aptget r-cran-rcpp libquantlib0-dev r-cran-runit r-cran-rgl littler r-cran-shiny
+   - ./travis-tool.sh install_aptget r-cran-rgl r-cran-zoo
    - ./travis-tool.sh install_r magrittr
    - ./travis-tool.sh install_r dplyr
    - ./travis-tool.sh install_r plotKML
