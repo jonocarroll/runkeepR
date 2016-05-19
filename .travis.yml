@@ -16,18 +16,10 @@ env:
     - R_CHECK_ARGS="--no-build-vignettes --no-manual"
     - BOOTSTRAP_LATEX=""
 
-addons:
-  apt:
-    sources:
-    - r-packages-precise
-    packages:
-    - r-base-dev
-    - r-recommended
-
 before_install:
-  - "sudo apt-get install aptitude" # install aptitude as an alternative to apt-get
-  - "sudo aptitude install libgdal-dev" # install the package (you may have to respond to queries here)
-  - "sudo aptitude install libproj-dev" # install the proj.4 projection library
+  - sudo apt-get install aptitude
+  - sudo aptitude install libgdal-dev
+  - sudo aptitude install libproj-dev
 
 install:
   - Rscript -e "if (!require('devtools')) install.packages('devtools')"
