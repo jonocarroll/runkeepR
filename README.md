@@ -1,4 +1,4 @@
-[![Travis Build Status](https://travis-ci.org/jonocarroll/runkeepR.svg?branch=master?label=Mac%20OSX%20%26%20Linux)](https://travis-ci.org/jonocarroll/runkeepR)
+[![Travis Build Status](https://travis-ci.org/jonocarroll/runkeepR.svg?branch=master)](https://travis-ci.org/jonocarroll/runkeepR)
 [![AppVeyor Build Status](https://img.shields.io/appveyor/ci/jonocarroll/runkeepR/master.svg?label=Windows)](https://ci.appveyor.com/project/jonocarroll/runkeepR)
 [![Coverage Status](https://codecov.io/github/paleo13/leafier/coverage.svg?branch=master)](https://codecov.io/github/jonocarroll/runkeepR?branch=master)
 
