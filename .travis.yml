@@ -15,6 +15,9 @@ env:
     - R_CHECK_ARGS="--no-build-vignettes --no-manual"
     - BOOTSTRAP_LATEX=""
 
+r_build_args: --no-build-vignettes --no-manual --no-resave-data
+r_check_args: --no-build-vignettes --no-manual
+
 install:
   - Rscript -e "if (!require('devtools')) install.packages('devtools')"
   - Rscript -e "devtools::install_deps(dep = TRUE)"
@@ -52,6 +55,5 @@ r_binary_install:
 #after_success:
 #  - Rscript -e 'covr::codecov()'
  
-r_build_args: --no-build-vignettes --no-manual --no-resave-data
-r_check_args: --no-build-vignettes --no-manual
-
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
