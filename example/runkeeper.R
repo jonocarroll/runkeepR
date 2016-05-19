@@ -10,7 +10,9 @@
 # library(RgoogleMaps)
 library(ggmap)
 library(magrittr)
-library(plotKML)
+# library(plotKML)
+# library(maptools)
+library(XML)
 # library(plyr)
 library(dplyr)
 # library(fpc)
@@ -19,7 +21,7 @@ require(RColorBrewer)
 
 setwd("~/Dropbox/R/runkeeper/")
 
-num_locations <- 3
+# num_locations <- 3
 
 if(!file.exists(file.path("./data","routes.Rdata"))) {
   
@@ -30,27 +32,49 @@ if(!file.exists(file.path("./data","routes.Rdata"))) {
   
   # Generate vectors for data frame
   index     <- c()
+  name      <- c()
   latitude  <- c()
   longitude <- c()
   file      <- c()
+  elevation <- c()
+  time      <- c()
   
   k <- 1 # Set up Counter
   
   # 
-  for (f in 1:length(files)) {
-   curr_route <- readGPX(files[f])
-
+  # for (f in 1:length(files)) {
+  for (f in 1:20) {
+   # curr_route <- readGPS(i="gpx", f=files[1], type="w")
+   # curr_route2 <- readGPX(files[1])
+   # 
+   # library(XML)
+   data <- xmlParse(files[f])
+   curr_route <- xmlToList(data)
+   
     # Treat interrupted GPS paths as seperate routes (useful if you occasionally stop running..walk for a bit, and start again like I do.)
-    for (i in curr_route$tracks[[1]]) {
+    # for (i in curr_route$tracks[[1]]) {
       k <- k + 1
-      location  <- i
-      file      <- c(file, rep(files[f], dim(location)[1])) 
-      index     <- c(index, rep(k, dim(location)[1]))
-      latitude  <- c(latitude,  location$lat)
-      longitude <- c(longitude, location$lon)
+      # location  <- i
+      
+      nseg <- length(curr_route$trk$trkseg)
+      
+      name      <- c(name, rep(xmlToDataFrame(data)$name, nseg))
+      file      <- c(file, rep(files[f], nseg)) 
+      index     <- c(index, rep(k, nseg))
+      
+      # latitude  <- c(latitude,  location$lat)
+      # longitude <- c(longitude, location$lon)
+      # elevation <- c(elevation, location$ele)
+      # time      <- c(time, location$time)
+      
+      latitude  <- c(latitude, as.numeric(xml_data[["trk"]][["trkseg"]][["trkpt"]][[".attrs"]][["lat"]]))
+      longitude <- c(longitude, as.numeric(xml_data[["trk"]][["trkseg"]][["trkpt"]][[".attrs"]][["lon"]]))
+      elevation <- c(elevation, as.numeric(xml_data[["trk"]][["trkseg"]][["trkpt"]][["ele"]]))
+      time      <- c(time, as.POSIXct(xml_data[["trk"]][["trkseg"]][["trkpt"]][["time"]], format="%Y-%m-%dT%H:%M:%SZ"))
+      
     }
   }
-  routes <- data.frame(index, latitude, longitude, file)
+  routes <- data.frame(index, name, time, latitude, longitude, elevation, file)
   # routes <- data.frame(cbind(index, latitude, longitude, file))
   
   # Because the routes dataframe takes a while to generate for some folks - save it!

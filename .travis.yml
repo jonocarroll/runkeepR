@@ -16,11 +16,6 @@ env:
     - R_CHECK_ARGS="--no-build-vignettes --no-manual"
     - BOOTSTRAP_LATEX=""
 
-before_install:
-  - sudo apt-get install aptitude
-  - sudo aptitude -y install libgdal-dev 
-  - sudo aptitude -y install libproj-dev
-
 install:
   - Rscript -e "if (!require('devtools')) install.packages('devtools')"
   - Rscript -e "devtools::install_deps(dep = TRUE)"
