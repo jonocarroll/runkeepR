@@ -378,10 +378,32 @@ routes_lines <- points_to_line(data = routes,
                                lat = "latitude", 
                                id_field = "index")
 
+save(routes_lines, file="./data/routes_lines.rds")
+
+
+Adelaide <- structure(c(34.929, 138.600972222222), .Names = c("lat", "lon"))
+
 library(leaflet)
 leaflet(data = routes_lines) %>%
-  addTiles() %>%
-  addPolylines()
+  addTiles(urlTemplate = "http://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png", 
+           attribution = '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>') %>%
+  setView(lng=-Adelaide[1], lat=Adelaide[2], zoom = 11) %>%
+  addPolylines(color="red", weight=5)
+
+
+cols <- c("steelblue", "palegreen", "yellow", "orange", "red", "purple")
+
+map <-  leaflet(data=routes_lines)
+# map <- addTiles(map, 
+#                 urlTemplate = "http://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png", 
+#                 attribution = '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>')
+map <- addProviderTiles(map, "CartoDB.Positron")
+map <- setView(map, lng=-Adelaide[1], lat=Adelaide[2], zoom = 11)
+for(group in 1:length(routes_lines)){
+  map <- addPolylines(map, lng=~longitude, lat=~latitude, data=data.frame(routes_lines@lines[[group]]@Lines[[1]]@coords), color=sample(cols, 1))
+}
+map
+
 
 ## sample data: line lengths
 library(rgeos)
