@@ -18,8 +18,8 @@ env:
 
 before_install:
   - sudo apt-get install aptitude
-  - sudo aptitude install libgdal-dev
-  - sudo aptitude install libproj-dev
+  - sudo aptitude -y install libgdal-dev 
+  - sudo aptitude -y install libproj-dev
 
 install:
   - Rscript -e "if (!require('devtools')) install.packages('devtools')"
