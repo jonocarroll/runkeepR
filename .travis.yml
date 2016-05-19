@@ -39,7 +39,7 @@ r_binary_install:
 #   - ./travis-tool.sh install_r ggplot2
 #   - ./travis-tool.sh install_r tidyr
 
-#r_packages:
+r_packages:
 #  - devtools
 #  - rgeos
 ##  - rgdal
@@ -48,7 +48,7 @@ r_binary_install:
 #  - leaflet
 #  - shiny
 #  - knitr
-#  - covr
+  - covr
 #  - rmarkdown
 #  - testthat
   
@@ -56,4 +56,4 @@ r_binary_install:
 #  - Rscript -e 'covr::codecov()'
  
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+  - Rscript -e 'library(covr);codecov()'
