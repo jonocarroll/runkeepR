@@ -23,9 +23,11 @@ addons:
     packages:
     - r-base-dev
     - r-recommended
-    - libgdal1-dev
-    - libproj-dev
 
+before_install:
+  - "sudo apt-get install aptitude" # install aptitude as an alternative to apt-get
+  - "sudo aptitude install libgdal-dev" # install the package (you may have to respond to queries here)
+  - "sudo aptitude install libproj-dev" # install the proj.4 projection library
 
 install:
   - Rscript -e "if (!require('devtools')) install.packages('devtools')"
