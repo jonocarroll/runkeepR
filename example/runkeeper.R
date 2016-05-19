@@ -12,9 +12,9 @@ library(ggmap)
 library(magrittr)
 # library(plotKML)
 # library(maptools)
-library(XML)
 # library(plyr)
 library(dplyr)
+library(XML)
 # library(fpc)
 # library(mapproj)
 require(RColorBrewer)
@@ -37,13 +37,13 @@ if(!file.exists(file.path("./data","routes.Rdata"))) {
   longitude <- c()
   file      <- c()
   elevation <- c()
-  time      <- c()
+  time      <- c(.POSIXct(character(0)))
   
-  k <- 1 # Set up Counter
+  k <- 0 # Set up Counter
   
   # 
-  # for (f in 1:length(files)) {
-  for (f in 1:20) {
+  for (f in 1:length(files)) {
+  # for (f in 1:20) {
    # curr_route <- readGPS(i="gpx", f=files[1], type="w")
    # curr_route2 <- readGPX(files[1])
    # 
@@ -56,25 +56,34 @@ if(!file.exists(file.path("./data","routes.Rdata"))) {
       k <- k + 1
       # location  <- i
       
-      nseg <- length(curr_route$trk$trkseg)
       
-      name      <- c(name, rep(xmlToDataFrame(data)$name, nseg))
-      file      <- c(file, rep(files[f], nseg)) 
-      index     <- c(index, rep(k, nseg))
       
       # latitude  <- c(latitude,  location$lat)
       # longitude <- c(longitude, location$lon)
       # elevation <- c(elevation, location$ele)
       # time      <- c(time, location$time)
       
-      latitude  <- c(latitude, as.numeric(xml_data[["trk"]][["trkseg"]][["trkpt"]][[".attrs"]][["lat"]]))
-      longitude <- c(longitude, as.numeric(xml_data[["trk"]][["trkseg"]][["trkpt"]][[".attrs"]][["lon"]]))
-      elevation <- c(elevation, as.numeric(xml_data[["trk"]][["trkseg"]][["trkpt"]][["ele"]]))
-      time      <- c(time, as.POSIXct(xml_data[["trk"]][["trkseg"]][["trkpt"]][["time"]], format="%Y-%m-%dT%H:%M:%SZ"))
+      this_lat <- as.numeric(unname(unlist(lapply(lapply(curr_route[["trk"]][["trkseg"]], "[[", 3), "[", 1))))
+      latitude  <- c(latitude, this_lat)
+      
+      nseg <- length(this_lat)
+      
+      name      <- c(name, rep(as.character(xmlToDataFrame(data)$name), nseg))
+      file      <- c(file, rep(files[f], nseg)) 
+      index     <- c(index, rep(k, nseg))
+      
+      
+      longitude <- c(longitude, as.numeric(unname(unlist(lapply(lapply(curr_route[["trk"]][["trkseg"]], "[[", 3), "[", 2)))))
+      elevation <- c(elevation, as.numeric(unname(unlist(lapply(curr_route[["trk"]][["trkseg"]], "[[", 1)))))
+      time      <- c(time, as.POSIXct(as.character(unname(unlist(lapply(curr_route[["trk"]][["trkseg"]], "[[", 2)))), format="%Y-%m-%dT%H:%M:%SZ"))
+      # latitude  <- c(latitude, as.numeric(xml_data[["trk"]][["trkseg"]][["trkpt"]][[".attrs"]][["lat"]]))
+      # longitude <- c(longitude, as.numeric(xml_data[["trk"]][["trkseg"]][["trkpt"]][[".attrs"]][["lon"]]))
+      # elevation <- c(elevation, as.numeric(xml_data[["trk"]][["trkseg"]][["trkpt"]][["ele"]]))
+      # time      <- c(time, as.POSIXct(xml_data[["trk"]][["trkseg"]][["trkpt"]][["time"]], format="%Y-%m-%dT%H:%M:%SZ"))
       
     # }
   }
-  routes <- data.frame(index, name, time, latitude, longitude, elevation, file)
+  routes <- data.frame(index, name, time, latitude, longitude, elevation, file, stringsAsFactors=FALSE)
   # routes <- data.frame(cbind(index, latitude, longitude, file))
   
   # Because the routes dataframe takes a while to generate for some folks - save it!

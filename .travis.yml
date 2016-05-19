@@ -20,6 +20,10 @@ install:
   - Rscript -e "if (!require('devtools')) install.packages('devtools')"
   - Rscript -e "devtools::install_deps(dep = TRUE)"
 
+r_binary_install:
+  - magrittr
+  - dplyr
+  - XML
   
 #after_success:
 #  - Rscript -e 'covr::codecov()'
