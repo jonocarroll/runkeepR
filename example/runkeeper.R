@@ -72,7 +72,7 @@ if(!file.exists(file.path("./data","routes.Rdata"))) {
       elevation <- c(elevation, as.numeric(xml_data[["trk"]][["trkseg"]][["trkpt"]][["ele"]]))
       time      <- c(time, as.POSIXct(xml_data[["trk"]][["trkseg"]][["trkpt"]][["time"]], format="%Y-%m-%dT%H:%M:%SZ"))
       
-    }
+    # }
   }
   routes <- data.frame(index, name, time, latitude, longitude, elevation, file)
   # routes <- data.frame(cbind(index, latitude, longitude, file))
