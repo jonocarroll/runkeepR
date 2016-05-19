@@ -1,6 +1,6 @@
 [![Travis Build Status](https://travis-ci.org/jonocarroll/runkeepR.svg?branch=master)](https://travis-ci.org/jonocarroll/runkeepR)
 [![AppVeyor Build Status](https://img.shields.io/appveyor/ci/jonocarroll/runkeepR/master.svg?label=Windows)](https://ci.appveyor.com/project/jonocarroll/runkeepR)
-[![Coverage Status](https://codecov.io/github/paleo13/leafier/coverage.svg?branch=master)](https://codecov.io/github/jonocarroll/runkeepR?branch=master)
+[![Coverage Status](https://codecov.io/gh/jonocarroll/runkeepR/branch/master/graph/badge.svg)](https://codecov.io/gh/jonocarroll/runkeepR)
 
 # <img src="https://d2b4ufapzmnxpw.cloudfront.net/build/13556/static/web/images/rk_app_logo_blue_150x142.png"> runkeepR
 
