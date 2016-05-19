@@ -1,11 +1,11 @@
 language: r
 cache: packages
 sudo: required
-dist: trusty
 warnings_are_errors: false
 
 os:
   - linux
+  - osx
 
 env:
   global:
