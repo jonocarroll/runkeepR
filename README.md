@@ -5,5 +5,6 @@
 Extract, plot, and analyse Runkeeper(TM) data.
 
 <img src="https://github.com/jonocarroll/runkeepR/blob/master/img/2-CITY-all-map.png?raw=true">
+<img src="https://github.com/jonocarroll/runkeepR/raw/master/leaflet_map_Adelaide.png?height=800">
 
 Not affiliated with Runkeeper(TM). Runkeeper(TM) logo © FitnessKeeper 2016
