@@ -1,38 +1,50 @@
-language: R
+language: r
 cache: packages
-sudo: required
-dist: trusty
+sudo: false
 warnings_are_errors: false
 
 os:
   - linux
+#  - osx
+#  - windows
 
 env:
   global:
-    - NOT_CRAN=true
     - _R_CHECK_FORCE_SUGGESTS_=False
-    - R_BUILD_ARGS="--no-build-vignettes" 
-#    - R_CHECK_ARGS="--as-cran"
-#    - BOOTSTRAP_LATEX="1"  
+    - R_LIBS="http://cran.rstudio.com"
+    - R_BUILD_ARGS="--no-build-vignettes --no-manual"
+    - R_CHECK_ARGS="--no-build-vignettes --no-manual"
+    - BOOTSTRAP_LATEX=""
 
-before_install: 
-  - echo "TRAVIS_OS_NAME = $TRAVIS_OS_NAME"
-  - echo "options(repos = c(CRAN='http://cran.rstudio.com'))" > ~/.Rprofile
-  - curl -OL http://raw.github.com/eddelbuettel/r-travis/master/scripts/travis-tool.sh
-  - chmod 755 ./travis-tool.sh
-  - ./travis-tool.sh bootstrap
-  
+addons:
+  apt:
+    sources:
+    - r-packages-precise
+    packages:
+    - r-base-dev
+    - r-recommended
+    - libgdal1-dev
+    - libproj-dev
+
+
 install:
-#  - ./travis-tool.sh install_aptget r-cran-rcpp libquantlib0-dev r-cran-runit r-cran-rgl littler r-cran-shiny
-   - ./travis-tool.sh install_aptget r-cran-rgl r-cran-zoo
-   - ./travis-tool.sh install_r magrittr
-   - ./travis-tool.sh install_r dplyr
-   - ./travis-tool.sh install_r plotKML
-   - ./travis-tool.sh install_r lubridate
-   - ./travis-tool.sh install_r ggplot2
-   - ./travis-tool.sh install_r tidyr
+  - Rscript -e "if (!require('devtools')) install.packages('devtools')"
+  - Rscript -e "devtools::install_deps(dep = TRUE)"
 
-r_packages:
+  
+#after_success:
+#  - Rscript -e 'covr::codecov()'
+ 
+#  - ./travis-tool.sh install_aptget r-cran-rcpp libquantlib0-dev r-cran-runit r-cran-rgl littler r-cran-shiny
+#   - ./travis-tool.sh install_aptget r-cran-rgl r-cran-zoo
+#  - ./travis-tool.sh install_r magrittr
+#   - ./travis-tool.sh install_r dplyr
+#   - ./travis-tool.sh install_r plotKML
+#   - ./travis-tool.sh install_r lubridate
+#   - ./travis-tool.sh install_r ggplot2
+#   - ./travis-tool.sh install_r tidyr
+
+#r_packages:
 #  - devtools
 #  - rgeos
 ##  - rgdal
@@ -42,8 +54,8 @@ r_packages:
 #  - shiny
 #  - knitr
 #  - covr
-  - rmarkdown
-  - testthat
+#  - rmarkdown
+#  - testthat
   
 #after_success:
 #  - Rscript -e 'covr::codecov()'
