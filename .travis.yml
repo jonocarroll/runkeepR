@@ -5,8 +5,8 @@ warnings_are_errors: false
 
 os:
   - linux
-#  - osx
-#  - windows
+  - osx
+  - windows
 
 env:
   global:
