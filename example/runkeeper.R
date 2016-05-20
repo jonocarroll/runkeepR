@@ -9,19 +9,25 @@
 
 # library(RgoogleMaps)
 # library(ggmap)
-library(magrittr)
+# library(magrittr)
 # library(plotKML)
 # library(maptools)
 # library(plyr)
-library(dplyr)
-library(XML)
+# library(dplyr)
+# library(XML)
 # library(fpc)
 # library(mapproj)
 # require(RColorBrewer)
 
-setwd("~/Dropbox/R/runkeeper/")
+# setwd("~/Dropbox/R/runkeeper/")
+setwd("~/Dropbox/Freelancer/runkeepR-test/")
 
-
+library(runkeepR)
+routes_pkg <- load_tracks(".")
+save(routes_pkg, file="saved_routes.rds")
+load("saved_routes.rds")
+plot_leaflet(routes_pkg)
+summarise_runs(routes_pkg)
 
 ## multiple tracks: ./data/2012-09-06-0702.gpx
 # data <- xmlTreeParse("./data/2012-09-06-0702.gpx")
@@ -49,155 +55,9 @@ setwd("~/Dropbox/R/runkeeper/")
 # ReadGPX_MMR <- function(gpx.file) {
 
 
-read_RK_GPX <- function(gpxfile) {
-
-  ret <- xmlTreeParse(gpxfile, useInternalNodes = TRUE)
-  top <- xmlRoot(ret)  
-  trkname <- xmlValue(top[[1]][[1]])
-  trkdesc <- as.POSIXct(xmlValue(top[[1]][[2]]), format="%Y-%m-%dT%H:%M:%SZ", tz="UTC")
-  
-  ntracks <- length(xmlChildren(top[[1]])) - 2 ## subtracting name and description
-
-  longitude <- c()
-  latitude  <- c()
-  trackid   <- c()
-  elevation <- c()
-  time      <- c(.POSIXct(character(0)))
-  
-  for (itrack in 2+seq_len(ntracks)) {  
-    longitude <- c(longitude, as.numeric(xmlSApply(top[[1]][[itrack]], xmlGetAttr, "lon")))
-    this_latitude <- as.numeric(xmlSApply(top[[1]][[itrack]], xmlGetAttr, "lat"))
-    latitude  <- c(latitude, this_latitude)
-    trackid   <- c(trackid, rep(itrack - 2, length(this_latitude)))
-    for (ipt in 1:length(xmlChildren(top[[1]][[itrack]]))) {
-      elevation <- c(elevation, as.numeric(xmlSApply(top[[1]][[itrack]][[ipt]], xmlValue)[["ele"]]))
-      time      <- c(time, as.POSIXct(xmlSApply(top[[1]][[itrack]][[ipt]], xmlValue)[["time"]], format="%Y-%m-%dT%H:%M:%SZ"))
-    }
-  }
-  
-  return(data.frame(trackid, trkname, trkdesc, latitude, longitude, elevation, time, gpxfile, stringsAsFactors=FALSE))
-}
 
 
 
-
-files <- dir(file.path("./data"), pattern="\\.gpx", full.names=TRUE)
-
-routes_list <- lapply(files, read_RK_GPX)
-
-routes <- as.data.frame(do.call(rbind, routes_list), stringsAsFactors=FALSE)  
-
-save(routes, file="~/Dropbox/Freelancer/runkeepR/example/routes_all.rds")
-
-meta_data <- read.csv(file.path("./data", "cardioActivities.csv"), stringsAsFactors=FALSE)
-meta_data %<>% mutate(gpxfile=ifelse(GPX.File=="", NA, paste0(path.expand("./data"),"/",GPX.File)), GPX.File=NULL)
-
-# Bind routes
-# routes <- left_join(routes, meta_data, by="gpxfile") %>% arrange(index)
-routes_all <- merge(meta_data, routes, by="gpxfile") %>% arrange(time)
-
-## process dates
-routes_all$Date  <- as.POSIXct(routes_all$Date)
-routes_all$Year  <- year(routes_all$Date)
-routes_all$Month <- month(routes_all$Date)
-routes_all$Day   <- day(routes_all$Date)
-
-## copy durations to total minutes
-routes_all$Duration..seconds. <- unlist(lapply(strsplit(routes_all$Duration, ":"), function(x) {
-  x <- as.integer(x)
-  if(length(x)==3) {
-    x[1]*60L*60L + x[2]*60L + x[3]
-  } else if(length(x)==2) {
-    x[1]*60L + x[2]
-  }
-}))
-
-## re-arrange, put POSIX fields next to each other
-routes_all %<>% select(gpxfile, trkname, trkdesc, Type, trackid, Date, Year, Month, Day, time, Duration, Duration..seconds., everything())
-
-
-
-## convert routes to a SpatialLinesDataFrame
-## https://rpubs.com/walkerke/points_to_line
-library(sp)
-library(maptools)
-
-points_to_line <- function(data, long, lat, id_field = NULL, sort_field = NULL) {
-  
-  # Convert to SpatialPointsDataFrame
-  coordinates(data) <- c(long, lat)
-  
-  # If there is a sort field...
-  if (!is.null(sort_field)) {
-    if (!is.null(id_field)) {
-      data <- data[order(data[[id_field]], data[[sort_field]]), ]
-    } else {
-      data <- data[order(data[[sort_field]]), ]
-    }
-  }
-  
-  # If there is only one path...
-  if (is.null(id_field)) {
-    
-    lines <- SpatialLines(list(Lines(list(Line(data)), "id")))
-    
-    return(lines)
-    
-    # Now, if we have multiple lines...
-  } else if (!is.null(id_field)) {  
-    
-    # Split into a list by ID field
-    paths <- sp::split(data, data[[id_field]])
-    
-    sp_lines <- SpatialLines(list(Lines(list(Line(paths[[1]])), "line1")))
-    
-    # I like for loops, what can I say...
-    for (p in 2:length(paths)) {
-      id <- paste0("line", as.character(p))
-      l <- SpatialLines(list(Lines(list(Line(paths[[p]])), id)))
-      sp_lines <- spRbind(sp_lines, l)
-    }
-    
-    return(sp_lines)
-  }
-}
-
-routes_lines <- points_to_line(data = routes_all, 
-                               long = "longitude", 
-                               lat = "latitude", 
-                               id_field = "trkname")
-
-save(routes_lines, file="~/Dropbox/Freelancer/runkeepR/example/leaflet_test/data/routes_lines.rds")
-
-
-# Adelaide <- structure(c(-34.929, 138.600972222222), .Names = c("lat", "lon"))
-# DataCenter <- structure(c(median(routes_all$latitude)))
-
-# library(leaflet)
-# leaflet(data = routes_lines) %>%
-#   addTiles(urlTemplate = "http://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png", 
-#            attribution = '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>') %>%
-#   setView(lng=-Adelaide[1], lat=Adelaide[2], zoom = 11) %>%
-#   addPolylines(color="red", weight=5)
-
-
-cols <- c("steelblue", "palegreen", "yellow", "orange", "red", "purple")
-
-map <-  leaflet(data=routes_lines)
-# map <- addTiles(map, 
-#                 urlTemplate = "http://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png", 
-#                 attribution = '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>')
-map <- addProviderTiles(map, "CartoDB.Positron")
-# map <- setView(map, lng=Adelaide[1], lat=Adelaide[2], zoom = 11)
-map <- setView(map, lng=median(routes_all$longitude), lat=median(routes_all$latitude), zoom = 11)
-rtnames <- unique(routes_all$trkname)
-for(group in 1:length(routes_lines)){
-  # for(rt in 1:length(routes_lines@lines[[group]]@Lines))
-  map <- addPolylines(map, lng=~longitude, lat=~latitude, 
-                      data=data.frame(routes_lines@lines[[group]]@Lines[[1]]@coords), color=sample(cols, 1),
-                      popup=rtnames[group])
-}
-map
 
 
 
