@@ -5,6 +5,6 @@ Version: 0.1
 Date: 2016-05-16
 Author: J. Carroll [aut, cre]
 Maintainer: J. Carroll <jono@jcarroll.com.au>
-Description: More about what it does (maybe more than one line)
+Description: Extract, analyse, and plot Runkeeper(TM) data
 License: What license is it under?
-Depends: magrittr, dplyr, XML, ggmap, lubridate, ggplot2, tidyr, sp, maptools, leaflet, splancs
+Depends: magrittr, dplyr, XML, ggmap, lubridate, ggplot2, tidyr, sp, maptools, shiny, leaflet, shinydashboard

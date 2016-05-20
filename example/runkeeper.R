@@ -20,14 +20,15 @@
 # require(RColorBrewer)
 
 # setwd("~/Dropbox/R/runkeeper/")
-setwd("~/Dropbox/Freelancer/runkeepR-test/")
+# setwd("~/Dropbox/Freelancer/runkeepR-test/")
+setwd("~/Dropbox/Freelancer/runkeepR-test/2016/")
 
 library(runkeepR)
-routes_pkg <- load_tracks(".")
-save(routes_pkg, file="saved_routes.rds")
+routes <- load_tracks(".")
+save(routes, file="saved_routes.rds")
 load("saved_routes.rds")
-plot_leaflet(routes_pkg)
-summarise_runs(routes_pkg)
+plot_leaflet(routes)
+summarise_runs(routes)
 
 ## multiple tracks: ./data/2012-09-06-0702.gpx
 # data <- xmlTreeParse("./data/2012-09-06-0702.gpx")

@@ -18,38 +18,45 @@ or
 
 ## Usage
 
-    setwd("~/runkeepR-test/") ## set directory to location of .gpx files
-
 load the installed package
 
     library(runkeepR)
     
-load and process the route information, converting information to a data.frame
+You can get a zipped export of your Runkeeper(TM) data from the [logged-in settings page on Runkeeper's website](https://runkeeper.com/exportDataForm), _e.g._ `runkeeper-data-export-12517482-2016-05-20-1550.zip`.
     
-    routes_pkg <- load_tracks(".")
-    save(routes_pkg, file="saved_routes.rds") ## save the data to avoid re-processing
+<img src="https://github.com/jonocarroll/runkeepR/blob/master/img/runkeeper_export.png?height=600">
+    
+Save the `.zip` file to a directory (e.g. `~/runkeepR-test/`) and unzip the contents (mainly `.gpx` files and a couple of `.csv` files). Set this directory as your working directory in `R`.
 
-the data can be plotted either with `ggplot` 
+    setwd("~/runkeepR-test/") ## set directory to location of .gpx files
+
+Loading and processing the route information contained in the `.gpx` and `.csv` files into a data.frame is as simple as
+    
+    routes <- load_tracks(".")
+    save(routes, file="saved_routes.rds") ## save the data to avoid re-processing
+
+The data can be plotted either with `ggplot` 
 
     load("saved_routes.rds")
-    plot_ggplot(routes_pkg, center="Adelaide, Australia", zoom=14)
+    plot_ggplot(routes, center="Adelaide, Australia", zoom=14)
 
 <img src="https://github.com/jonocarroll/runkeepR/blob/master/img/all_data_ggplot.png?height=600">
 
-or `leaflet`
+or `leaflet`; this plots all paths but is clever about which ones to load depending on the current viewport, so it's faster. 
 
     load("saved_routes.rds")
-    plot_leaflet(routes_pkg)
+    plot_leaflet(routes)
 
 <img src="https://github.com/jonocarroll/runkeepR/blob/master/img/all_data_leaflet.png?height=600">
+<img src="https://github.com/jonocarroll/runkeepR/blob/master/img/all_data_leaflet_home.png?height=600">
 
 Summary statistics can be viewed 
 
-    summarise_runs(routes_pkg, dashboard=FALSE)
+    summarise_runs(routes, dashboard=FALSE)
 
 and presented in a `shinydashboard`
 
-    summarise_runs(routes_pkg)
+    summarise_runs(routes)
 
 summarised either monthly 
 

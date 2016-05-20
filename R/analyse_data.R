@@ -8,7 +8,7 @@ summarise_runs <- function(rundata, by="trkname", dashboard=TRUE) {
   
   numdata <- rundata[numcols] %>% select(-latitude, -longitude) %>% unique
   
-  numdata$monthBin <- as.character(cut(as.Date(.data$Date), breaks="month"))
+  numdata$monthBin <- as.character(cut(as.Date(numdata$Date), breaks="month"))
   
   # if(is.null(by)) by <- "trkname"
   
@@ -95,17 +95,19 @@ summarise_runs <- function(rundata, by="trkname", dashboard=TRUE) {
           numdata_sum      <- numdata %>% filter(Year==input$slider) %>% select(monthBin, Duration..seconds., Distance..km., Calories.Burned, Climb..m., elevation) %>% group_by(monthBin) %>% summarise_each(funs_(input$fn))
           numdata_long     <- numdata_sum %>% ungroup %>% ungroup %>% gather(QUANTITY, VALUE, -monthBin)
           gg <- ggplot(numdata_long, aes(x=as.Date(monthBin), y=VALUE)) 
-          gg <- gg + scale_x_date(date_breaks="1 month")
+          gg <- gg + scale_x_date(date_breaks="1 month", date_labels="%B")
+          gg <- gg + labs(title=paste0(input$slider," Runkeeper Data"), subtitle=paste0(nrow(rundata %>% filter(Year==input$slider)), " records processed"), x="Month", y=paste0(input$fn,"(Value)"))
         } else if(input$window=="daily") {
           numdata_sum      <- numdata %>% filter(Year==input$slider) %>% select(yday, Duration..seconds., Distance..km., Calories.Burned, Climb..m., elevation) %>% group_by(yday) %>% summarise_each(funs_(input$fn))
           numdata_long     <- numdata_sum %>% ungroup %>% ungroup %>% gather(QUANTITY, VALUE, -yday)
           gg <- ggplot(numdata_long, aes(x=yday, y=VALUE)) 
+          gg <- gg + xlim(c(0,365))
+          gg <- gg + labs(title=paste0(input$slider," Runkeeper Data"), subtitle=paste0(nrow(rundata %>% filter(Year==input$slider)), " records processed"), x="Day of Year", y=paste0(input$fn,"(Value)"))
           # gg <- gg + scale_x_date(date_breaks="1 month")
         }
         gg <- gg + geom_bar(stat="identity", fill="steelblue1") 
         gg <- gg + facet_wrap(~QUANTITY, scales="free_y") 
         gg <- gg + theme_bw()
-        gg <- gg + labs(title=paste0(input$slider," Runkeeper Data"), subtitle=paste0(nrow(rundata %>% filter(Year==input$slider)), " records processed"), x="YYYY-MM", y=paste0(input$fn,"(Value)"))
         gg <- gg + theme(axis.text.x=element_text(angle=90, hjust=0))
         print(gg)
       })
