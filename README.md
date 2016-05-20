@@ -53,10 +53,10 @@ and presented in a `shinydashboard`
 
 summarised either monthly 
 
-<img src="https://github.com/jonocarroll/runkeepR/blob/master/img/shiny_dashboard_monthly">
+<img src="https://github.com/jonocarroll/runkeepR/blob/master/img/shiny_dashboard_monthly.png?height=600">
 
 or daily
 
-<img src="https://github.com/jonocarroll/runkeepR/blob/master/img/shiny_dashboard_daily">
+<img src="https://github.com/jonocarroll/runkeepR/blob/master/img/shiny_dashboard_daily.png?height=600">
 
 Not affiliated with Runkeeper(TM). Runkeeper(TM) logo © FitnessKeeper 2016
