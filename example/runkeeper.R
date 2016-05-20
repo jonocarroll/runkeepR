@@ -8,7 +8,7 @@
 # install.packages("plotKML")
 
 # library(RgoogleMaps)
-library(ggmap)
+# library(ggmap)
 library(magrittr)
 # library(plotKML)
 # library(maptools)
@@ -17,81 +17,263 @@ library(dplyr)
 library(XML)
 # library(fpc)
 # library(mapproj)
-require(RColorBrewer)
+# require(RColorBrewer)
 
 setwd("~/Dropbox/R/runkeeper/")
 
-# num_locations <- 3
 
-if(!file.exists(file.path("./data","routes.Rdata"))) {
+
+## multiple tracks: ./data/2012-09-06-0702.gpx
+# data <- xmlTreeParse("./data/2012-09-06-0702.gpx")
+# xmltop = xmlRoot(data)[["trk"]]
+# xmlcat1 <- xmlSApply(xmltop[["trkseg"]], function(x) xmlSApply(x, xmlValue))
+# xmlcat2 <- xmlSApply(xmltop[["trkseg"]][["trkpt"]], function(x) xmlSApply(x, xmlValue))
+# xmlcat_df <- data.frame(t(xmlcat),row.names=NULL)
+# curr_route <- xmlToList(data)
+# 
+
+# # Parse the GPX file
+# pfile <- htmlTreeParse("./data/2012-09-06-0702.gpx", error = function (…) {}, useInternalNodes = T)
+# # Get all elevations, times and coordinates via the respective xpath
+# elevations <- as.numeric(xpathSApply(pfile, path = “//trkpt/ele”, xmlValue))
+# times <- xpathSApply(pfile, path = “//trkpt/time”, xmlValue)
+# coords <- xpathSApply(pfile, path = “//trkpt”, xmlAttrs)
+# # Extract latitude and longitude from the coordinates
+# lats <- as.numeric(coords[“lat”,])
+# lons <- as.numeric(coords[“lon”,])
+# # Put everything in a dataframe and get rid of old variables
+# geodf <- data.frame(lat = lats, lon = lons, ele = elevations, time = times)
+# rm(list=c(“elevations”, “lats”, “lons”, “pfile”, “times”, “coords”))
+
+# 
+# ReadGPX_MMR <- function(gpx.file) {
+
+
+read_RK_GPX <- function(gpxfile) {
+
+  ret <- xmlTreeParse(gpxfile, useInternalNodes = TRUE)
+  top <- xmlRoot(ret)  
+  trkname <- xmlValue(top[[1]][[1]])
+  trkdesc <- as.POSIXct(xmlValue(top[[1]][[2]]), format="%Y-%m-%dT%H:%M:%SZ", tz="UTC")
   
-  # https://gist.github.com/danielecook/6c555937144d4955073b
-  
-  # GPX files downloaded from Runkeeper
-  files <- dir(file.path("./data"), pattern="\\.gpx", full.names=TRUE)
-  
-  # Generate vectors for data frame
-  index     <- c()
-  name      <- c()
-  latitude  <- c()
+  ntracks <- length(xmlChildren(top[[1]])) - 2 ## subtracting name and description
+
   longitude <- c()
-  file      <- c()
+  latitude  <- c()
+  trackid   <- c()
   elevation <- c()
   time      <- c(.POSIXct(character(0)))
   
-  k <- 0 # Set up Counter
-  
-  # 
-  for (f in 1:length(files)) {
-  # for (f in 1:20) {
-   # curr_route <- readGPS(i="gpx", f=files[1], type="w")
-   # curr_route2 <- readGPX(files[1])
-   # 
-   # library(XML)
-   data <- xmlParse(files[f])
-   curr_route <- xmlToList(data)
-   
-    # Treat interrupted GPS paths as seperate routes (useful if you occasionally stop running..walk for a bit, and start again like I do.)
-    # for (i in curr_route$tracks[[1]]) {
-      k <- k + 1
-      # location  <- i
-      
-      
-      
-      # latitude  <- c(latitude,  location$lat)
-      # longitude <- c(longitude, location$lon)
-      # elevation <- c(elevation, location$ele)
-      # time      <- c(time, location$time)
-      
-      this_lat <- as.numeric(unname(unlist(lapply(lapply(curr_route[["trk"]][["trkseg"]], "[[", 3), "[", 1))))
-      latitude  <- c(latitude, this_lat)
-      
-      nseg <- length(this_lat)
-      
-      name      <- c(name, rep(as.character(xmlToDataFrame(data)$name), nseg))
-      file      <- c(file, rep(files[f], nseg)) 
-      index     <- c(index, rep(k, nseg))
-      
-      
-      longitude <- c(longitude, as.numeric(unname(unlist(lapply(lapply(curr_route[["trk"]][["trkseg"]], "[[", 3), "[", 2)))))
-      elevation <- c(elevation, as.numeric(unname(unlist(lapply(curr_route[["trk"]][["trkseg"]], "[[", 1)))))
-      time      <- c(time, as.POSIXct(as.character(unname(unlist(lapply(curr_route[["trk"]][["trkseg"]], "[[", 2)))), format="%Y-%m-%dT%H:%M:%SZ"))
-      # latitude  <- c(latitude, as.numeric(xml_data[["trk"]][["trkseg"]][["trkpt"]][[".attrs"]][["lat"]]))
-      # longitude <- c(longitude, as.numeric(xml_data[["trk"]][["trkseg"]][["trkpt"]][[".attrs"]][["lon"]]))
-      # elevation <- c(elevation, as.numeric(xml_data[["trk"]][["trkseg"]][["trkpt"]][["ele"]]))
-      # time      <- c(time, as.POSIXct(xml_data[["trk"]][["trkseg"]][["trkpt"]][["time"]], format="%Y-%m-%dT%H:%M:%SZ"))
-      
-    # }
+  for (itrack in 2+seq_len(ntracks)) {  
+    longitude <- c(longitude, as.numeric(xmlSApply(top[[1]][[itrack]], xmlGetAttr, "lon")))
+    this_latitude <- as.numeric(xmlSApply(top[[1]][[itrack]], xmlGetAttr, "lat"))
+    latitude  <- c(latitude, this_latitude)
+    trackid   <- c(trackid, rep(itrack - 2, length(this_latitude)))
+    for (ipt in 1:length(xmlChildren(top[[1]][[itrack]]))) {
+      elevation <- c(elevation, as.numeric(xmlSApply(top[[1]][[itrack]][[ipt]], xmlValue)[["ele"]]))
+      time      <- c(time, as.POSIXct(xmlSApply(top[[1]][[itrack]][[ipt]], xmlValue)[["time"]], format="%Y-%m-%dT%H:%M:%SZ"))
+    }
   }
-  routes <- data.frame(index, name, time, latitude, longitude, elevation, file, stringsAsFactors=FALSE)
-  # routes <- data.frame(cbind(index, latitude, longitude, file))
   
-  # Because the routes dataframe takes a while to generate for some folks - save it!
-  save(routes, file=file.path("./data","routes.Rdata"))
-} else {
-  # Use to load as needed.
-  load(file.path("./data","routes.Rdata"))
+  return(data.frame(trackid, trkname, trkdesc, latitude, longitude, elevation, time, gpxfile, stringsAsFactors=FALSE))
 }
+
+
+
+
+files <- dir(file.path("./data"), pattern="\\.gpx", full.names=TRUE)
+
+routes_list <- lapply(files, read_RK_GPX)
+
+routes <- as.data.frame(do.call(rbind, routes_list), stringsAsFactors=FALSE)  
+
+save(routes, file="~/Dropbox/Freelancer/runkeepR/example/routes_all.rds")
+
+meta_data <- read.csv(file.path("./data", "cardioActivities.csv"), stringsAsFactors=FALSE)
+meta_data %<>% mutate(gpxfile=ifelse(GPX.File=="", NA, paste0(path.expand("./data"),"/",GPX.File)), GPX.File=NULL)
+
+# Bind routes
+# routes <- left_join(routes, meta_data, by="gpxfile") %>% arrange(index)
+routes_all <- merge(meta_data, routes, by="gpxfile") %>% arrange(time)
+
+## process dates
+routes_all$Date  <- as.POSIXct(routes_all$Date)
+routes_all$Year  <- year(routes_all$Date)
+routes_all$Month <- month(routes_all$Date)
+routes_all$Day   <- day(routes_all$Date)
+
+## copy durations to total minutes
+routes_all$Duration..seconds. <- unlist(lapply(strsplit(routes_all$Duration, ":"), function(x) {
+  x <- as.integer(x)
+  if(length(x)==3) {
+    x[1]*60L*60L + x[2]*60L + x[3]
+  } else if(length(x)==2) {
+    x[1]*60L + x[2]
+  }
+}))
+
+## re-arrange, put POSIX fields next to each other
+routes_all %<>% select(gpxfile, trkname, trkdesc, Type, trackid, Date, Year, Month, Day, time, Duration, Duration..seconds., everything())
+
+
+
+## convert routes to a SpatialLinesDataFrame
+## https://rpubs.com/walkerke/points_to_line
+library(sp)
+library(maptools)
+
+points_to_line <- function(data, long, lat, id_field = NULL, sort_field = NULL) {
+  
+  # Convert to SpatialPointsDataFrame
+  coordinates(data) <- c(long, lat)
+  
+  # If there is a sort field...
+  if (!is.null(sort_field)) {
+    if (!is.null(id_field)) {
+      data <- data[order(data[[id_field]], data[[sort_field]]), ]
+    } else {
+      data <- data[order(data[[sort_field]]), ]
+    }
+  }
+  
+  # If there is only one path...
+  if (is.null(id_field)) {
+    
+    lines <- SpatialLines(list(Lines(list(Line(data)), "id")))
+    
+    return(lines)
+    
+    # Now, if we have multiple lines...
+  } else if (!is.null(id_field)) {  
+    
+    # Split into a list by ID field
+    paths <- sp::split(data, data[[id_field]])
+    
+    sp_lines <- SpatialLines(list(Lines(list(Line(paths[[1]])), "line1")))
+    
+    # I like for loops, what can I say...
+    for (p in 2:length(paths)) {
+      id <- paste0("line", as.character(p))
+      l <- SpatialLines(list(Lines(list(Line(paths[[p]])), id)))
+      sp_lines <- spRbind(sp_lines, l)
+    }
+    
+    return(sp_lines)
+  }
+}
+
+routes_lines <- points_to_line(data = routes_all, 
+                               long = "longitude", 
+                               lat = "latitude", 
+                               id_field = "trkname")
+
+save(routes_lines, file="~/Dropbox/Freelancer/runkeepR/example/leaflet_test/data/routes_lines.rds")
+
+
+# Adelaide <- structure(c(-34.929, 138.600972222222), .Names = c("lat", "lon"))
+# DataCenter <- structure(c(median(routes_all$latitude)))
+
+# library(leaflet)
+# leaflet(data = routes_lines) %>%
+#   addTiles(urlTemplate = "http://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png", 
+#            attribution = '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>') %>%
+#   setView(lng=-Adelaide[1], lat=Adelaide[2], zoom = 11) %>%
+#   addPolylines(color="red", weight=5)
+
+
+cols <- c("steelblue", "palegreen", "yellow", "orange", "red", "purple")
+
+map <-  leaflet(data=routes_lines)
+# map <- addTiles(map, 
+#                 urlTemplate = "http://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png", 
+#                 attribution = '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>')
+map <- addProviderTiles(map, "CartoDB.Positron")
+# map <- setView(map, lng=Adelaide[1], lat=Adelaide[2], zoom = 11)
+map <- setView(map, lng=median(routes_all$longitude), lat=median(routes_all$latitude), zoom = 11)
+rtnames <- unique(routes_all$trkname)
+for(group in 1:length(routes_lines)){
+  # for(rt in 1:length(routes_lines@lines[[group]]@Lines))
+  map <- addPolylines(map, lng=~longitude, lat=~latitude, 
+                      data=data.frame(routes_lines@lines[[group]]@Lines[[1]]@coords), color=sample(cols, 1),
+                      popup=rtnames[group])
+}
+map
+
+
+
+  # ReadGPX_MMR("./data/2012-09-06-0702.gpx")
+
+# num_locations <- 3
+
+# if(!file.exists(file.path("./data","routes.Rdata"))) {
+#   
+#   # https://gist.github.com/danielecook/6c555937144d4955073b
+#   
+#   # GPX files downloaded from Runkeeper
+#   files <- dir(file.path("./data"), pattern="\\.gpx", full.names=TRUE)
+#   
+#   # Generate vectors for data frame
+#   index     <- c()
+#   name      <- c()
+#   latitude  <- c()
+#   longitude <- c()
+#   file      <- c()
+#   elevation <- c()
+#   time      <- c(.POSIXct(character(0)))
+#   
+#   k <- 0 # Set up Counter
+#   
+#   # 
+#   for (f in 1:length(files)) {
+#   # for (f in 1:20) {
+#    # curr_route <- readGPS(i="gpx", f=files[1], type="w")
+#    # curr_route2 <- readGPX(files[1])
+#    # 
+#    # library(XML)
+#    data <- xmlParse(files[f])
+#    curr_route <- xmlToList(data)
+#    
+#     # Treat interrupted GPS paths as seperate routes (useful if you occasionally stop running..walk for a bit, and start again like I do.)
+#     # for (i in curr_route$tracks[[1]]) {
+#       k <- k + 1
+#       # location  <- i
+#       
+#       
+#       
+#       # latitude  <- c(latitude,  location$lat)
+#       # longitude <- c(longitude, location$lon)
+#       # elevation <- c(elevation, location$ele)
+#       # time      <- c(time, location$time)
+#       
+#       this_lat <- as.numeric(unname(unlist(lapply(lapply(curr_route[["trk"]][["trkseg"]], "[[", 3), "[", 1))))
+#       latitude  <- c(latitude, this_lat)
+#       
+#       nseg <- length(this_lat)
+#       
+#       name      <- c(name, rep(as.character(xmlToDataFrame(data)$name), nseg))
+#       file      <- c(file, rep(files[f], nseg)) 
+#       index     <- c(index, rep(k, nseg))
+#       
+#       
+#       longitude <- c(longitude, as.numeric(unname(unlist(lapply(lapply(curr_route[["trk"]][["trkseg"]], "[[", 3), "[", 2)))))
+#       elevation <- c(elevation, as.numeric(unname(unlist(lapply(curr_route[["trk"]][["trkseg"]], "[[", 1)))))
+#       time      <- c(time, as.POSIXct(as.character(unname(unlist(lapply(curr_route[["trk"]][["trkseg"]], "[[", 2)))), format="%Y-%m-%dT%H:%M:%SZ"))
+#       # latitude  <- c(latitude, as.numeric(xml_data[["trk"]][["trkseg"]][["trkpt"]][[".attrs"]][["lat"]]))
+#       # longitude <- c(longitude, as.numeric(xml_data[["trk"]][["trkseg"]][["trkpt"]][[".attrs"]][["lon"]]))
+#       # elevation <- c(elevation, as.numeric(xml_data[["trk"]][["trkseg"]][["trkpt"]][["ele"]]))
+#       # time      <- c(time, as.POSIXct(xml_data[["trk"]][["trkseg"]][["trkpt"]][["time"]], format="%Y-%m-%dT%H:%M:%SZ"))
+#       
+#     # }
+#   }
+#   routes <- data.frame(index, name, time, latitude, longitude, elevation, file, stringsAsFactors=FALSE)
+#   # routes <- data.frame(cbind(index, latitude, longitude, file))
+#   
+#   # Because the routes dataframe takes a while to generate for some folks - save it!
+#   save(routes, file=file.path("./data","routes.Rdata"))
+# } else {
+#   # Use to load as needed.
+#   load(file.path("./data","routes.Rdata"))
+# }
 
 # Fix data types
 # routes$file      <- as.character(routes$file)
@@ -99,21 +281,24 @@ if(!file.exists(file.path("./data","routes.Rdata"))) {
 # routes$longitude <- as.numeric(levels(routes$longitude)[routes$longitude])
 # routes           <- transform(routes, index=as.numeric(index))
 
-# Load Meta Data
-meta_data <- read.csv(file.path("./data","cardioActivities.csv"), stringsAsFactors=FALSE)
-meta_data %<>% mutate(file=paste0("./data/",GPX.File), GPX.File=NULL)
+# # Load Meta Data
+# meta_data <- read.csv(file.path("./data","cardioActivities.csv"), stringsAsFactors=FALSE)
+# meta_data %<>% mutate(file=paste0("./data/",GPX.File), GPX.File=NULL)
+# 
+# # Bind routes
+# routes_ext <- left_join(routes, meta_data, by="file") %>% arrange(index)
 
-# Bind routes
-routes <- left_join(routes, meta_data, by="file") %>% arrange(index)
 
-## separate the cities
-routes_hobart <- routes %>% filter(index %in% c(184,185,186))
-routes_trento <- routes %>% filter(index==400)
-routes_nuri   <- routes %>% filter(index %in% c(72:80))
-routes_falls  <- routes %>% filter(index==454)
-routes_cycle  <- routes %>% filter(Type=="Cycling")
-routes_toconf <- routes %>% filter(index==380)
-routes        %<>% filter(Type=="Walking" & !index %in% c(46,72:80,184:186,380,400,454))
+
+
+# ## separate the cities
+# routes_hobart <- routes %>% filter(index %in% c(184,185,186))
+# routes_trento <- routes %>% filter(index==400)
+# routes_nuri   <- routes %>% filter(index %in% c(72:80))
+# routes_falls  <- routes %>% filter(index==454)
+# routes_cycle  <- routes %>% filter(Type=="Cycling")
+# routes_toconf <- routes %>% filter(index==380)
+# routes %<>% filter(Type=="Walking" & !index %in% c(46,72:80,184:186,380,400,454))
 
 ## longest walks (possible errors)
 routes %>% group_by(index) %>% summarise(n_distinct(Distance..km.)) -> num_dists
@@ -400,7 +585,10 @@ map <-  leaflet(data=routes_lines)
 map <- addProviderTiles(map, "CartoDB.Positron")
 map <- setView(map, lng=-Adelaide[1], lat=Adelaide[2], zoom = 11)
 for(group in 1:length(routes_lines)){
-  map <- addPolylines(map, lng=~longitude, lat=~latitude, data=data.frame(routes_lines@lines[[group]]@Lines[[1]]@coords), color=sample(cols, 1))
+  # for(rt in 1:length(routes_lines@lines[[group]]@Lines))
+  map <- addPolylines(map, lng=~longitude, lat=~latitude, 
+                      data=data.frame(routes_lines@lines[[group]]@Lines[[1]]@coords), color=sample(cols, 1),
+                      popup=routes_lines@lines[[group]]@ID)
 }
 map
 
