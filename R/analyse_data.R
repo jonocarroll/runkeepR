@@ -62,7 +62,7 @@ summarise_runs <- function(rundata, by="trkname", dashboard=TRUE) {
           ),
           box(title = "Function",
               radioButtons("fn", "Function:", c("sum", "mean", "max"), selected="mean"), width=4
-              ),
+          ),
           box(title = "Window",
               radioButtons("window", "Window:", c("daily", "monthly"), selected="monthly"), width=4
           )
