@@ -1,6 +1,9 @@
 [![Linux/Mac Travis Build Status](https://img.shields.io/travis/jonocarroll/runkeepR/master.svg?label=Mac%20OSX%20%26%20Linux)](https://travis-ci.org/jonocarroll/runkeepR)
 [![AppVeyor Build Status](https://img.shields.io/appveyor/ci/jonocarroll/runkeepR/master.svg?label=Windows)](https://ci.appveyor.com/project/jonocarroll/runkeepR)
 [![Coverage Status](https://codecov.io/gh/jonocarroll/runkeepR/branch/master/graph/badge.svg)](https://codecov.io/gh/jonocarroll/runkeepR)
+[![GitHub forks](https://img.shields.io/github/forks/jonocarroll/runkeepR.svg)](https://github.com/jonocarroll/runkeepR/network)
+[![GitHub stars](https://img.shields.io/github/stars/jonocarroll/runkeepR.svg)](https://github.com/jonocarroll/runkeepR/stargazers)
+[![Twitter](https://img.shields.io/twitter/url/https/github.com/jonocarroll/runkeepR.svg?style=social)](https://twitter.com/intent/tweet?text=Wow:&url=%5Bobject%20Object%5D)
 
 # <img src="https://d2b4ufapzmnxpw.cloudfront.net/build/13556/static/web/images/rk_app_logo_blue_150x142.png"> runkeepR
 
