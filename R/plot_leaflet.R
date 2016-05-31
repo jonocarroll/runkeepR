@@ -42,15 +42,26 @@ points_to_line <- function(data, long, lat, id_field = NULL, sort_field = NULL) 
 
 
 
-plot_leaflet <- function(routes_all, latString=NULL, lonString=NULL, idString=NULL, ...) {
+plot_leaflet <- function(routes_all, latString=NULL, lonString=NULL, idString=NULL, filterType=NULL, ...) {
   
   ## update defaults
   latString <- ifelse(is.null(latString), "latitude",  latString) 
   lonString <- ifelse(is.null(lonString), "longitude", lonString) 
   idString  <- ifelse(is.null(idString),  "trkname",   idString) 
   
+  ## filter by type if requested
+  if(!is.null(filterType)) {
+    if(filterType %in% unique(routes_all$Type)) {
+      routes_filtered <- routes_all %>% filter(Type==filterType)
+    } else {
+      stop("filterType must be a Type classification in the data.")
+    }
+  } else {
+    routes_filtered <- routes_all
+  }
+  
   ## convert data.frame to SpatialLines
-  routes_lines <- points_to_line(data     = routes_all, 
+  routes_lines <- points_to_line(data     = routes_filtered, 
                                  long     = lonString, 
                                  lat      = latString, 
                                  id_field = idString)
@@ -61,13 +72,14 @@ plot_leaflet <- function(routes_all, latString=NULL, lonString=NULL, idString=NU
   ## generate the leaflet plot
   map <- leaflet(data=routes_lines)
   map <- addProviderTiles(map, "CartoDB.Positron")
-  map <- setView(map, lng=median(routes_all[[lonString]]), lat=median(routes_all[[latString]]), zoom = 11)
-  rtnames <- unique(routes_all[[idString]])
+  map <- setView(map, lng=median(routes_filtered[[lonString]]), lat=median(routes_filtered[[latString]]), zoom = 11)
+  # rtnames <- unique(routes_all[[idString]])[order(unique(routes_all$trkname))]
+  rtnames <- sort(unique(routes_filtered[[idString]]))
   for(group in 1:length(routes_lines)){
     # map <- addPolylines(map, lng=~longitude, lat=~latitude, 
     map <- addPolylines(map, lng=~get(lonString), lat=~get(latString), 
                         data=data.frame(routes_lines@lines[[group]]@Lines[[1]]@coords), color=sample(cols, 1),
-                        popup=rtnames[group], ...)
+                        popup=paste0("ID: ",group,"; ",rtnames[group]), ...)
   }
  
   print(map)

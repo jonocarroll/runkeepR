@@ -1,3 +1,11 @@
+#' Read a Runkeeper(TM) .gpx file into a data.frame
+#'
+#' @param gpxfile (char) name of the .gpx file to process
+#'
+#' @return
+#' @export
+#'
+#' @examples
 read_RK_GPX <- function(gpxfile) {
   
   ret <- xmlTreeParse(gpxfile, useInternalNodes = TRUE)
