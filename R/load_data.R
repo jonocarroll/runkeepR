@@ -1,11 +1,20 @@
-#' Read a Runkeeper(TM) .gpx file into a data.frame
+#' Read a Runkeeper(TM) \code{.gpx} file into a data.frame
+#' 
+#' Raw read of a single \code{.gpx} file. Only applicable to 
+#' Runkeeper(TM) \code{.gpx} files. Exported in case it is of use.
+#' 
+#' For a more general use version see \code{plotKML::readGPx} which fails to 
+#' read in elevation from Runkeeper(TM) files.
+#' 
+#' @param gpxfile name of the .gpx file to process
 #'
-#' @param gpxfile (char) name of the .gpx file to process
-#'
-#' @return
+#' @return data.frame of track details containing all available details for the tracked routes
+#' 
 #' @export
 #'
 #' @examples
+#' routes <- load_tracks(system.file("data", package="runkeepR"))
+#' 
 read_RK_GPX <- function(gpxfile) {
   
   ret <- xmlTreeParse(gpxfile, useInternalNodes = TRUE)
@@ -36,6 +45,23 @@ read_RK_GPX <- function(gpxfile) {
 }
 
 
+#' Load Runkeeper(TM) .gpx files into a data.frame
+#' 
+#' Starting at \code{gpxdir}, loads all \code{.gpx} files and merges them 
+#' with CardioActivities.csv to produce a \code{data.frame} of all tracked
+#' details.
+#'
+#' @param gpxdir directory containing .gpx files and cardioActivities.csv extracted from a Runkeeper(TM) zip file.
+#' 
+#' Obtaining your data:
+#'
+#' if{html}{figure{runkeeper_export.png}}
+#'
+#' @return data.frame of tracked data
+#' @export
+#'
+#' @examples
+#' routes <- load_tracks(system.file("data", package="runkeepR"))
 load_tracks <- function(gpxdir) {
   
   files <- dir(file.path(gpxdir), pattern="\\.gpx", full.names=TRUE)

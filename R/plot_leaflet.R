@@ -50,7 +50,7 @@ points_to_line <- function(data, long, lat, id_field = NULL, sort_field = NULL) 
 #' @param trackPal RColorBrewer palette name
 #' @param ... other options to pass to addPolylines
 #'
-#' @return
+#' @return NULL (loads a leaflet map)
 #' @export
 #'
 #' @examples

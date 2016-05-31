@@ -35,6 +35,9 @@ routes <- load_tracks(".")
 summarise_runs(routes)
 plot_leaflet(routes)
 
+system.file("data", package="runkeepR")
+routes <- load_tracks(system.file("data", package="runkeepR"))
+
 ## multiple tracks: ./data/2012-09-06-0702.gpx
 # data <- xmlTreeParse("./data/2012-09-06-0702.gpx")
 # xmltop = xmlRoot(data)[["trk"]]

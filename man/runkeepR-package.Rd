@@ -24,5 +24,14 @@ Maintainer: \packageMaintainer{runkeepR}
 ~~ Literature or other references for background information ~~
 }
 
+\examples{
+\dontrun{
+system.file("data", package="runkeepR")
+routes <- load_tracks(system.file("data", package="runkeepR"))
+plot_leaflet(routes, trackPal=topo.colors(10, alpha=0.5))
+}
+
+}
+
 \keyword{ package }
 
