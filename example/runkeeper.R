@@ -27,6 +27,7 @@ library(runkeepR)
 routes <- load_tracks(".")
 save(routes, file="saved_routes.rds")
 load("saved_routes.rds")
+plot_ggplot(routes, trackPal=topo.colors(10, alpha=0.5))
 plot_leaflet(routes, trackPal=topo.colors(10, alpha=0.5))
 summarise_runs(routes)
 

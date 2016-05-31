@@ -53,15 +53,28 @@ read_RK_GPX <- function(gpxfile) {
 #'
 #' @param gpxdir directory containing .gpx files and cardioActivities.csv extracted from a Runkeeper(TM) zip file.
 #' 
-#' Obtaining your data:
+#' @section Obtaining your data:
 #'
-#' if{html}{figure{runkeeper_export.png}}
+#' You can get a zipped export of your Runkeeper(TM) data from the logged-in settings page 
+#' on Runkeeper's website, e.g. runkeeper-data-export-12517482-2016-05-20-1550.zip.
 #'
+#' \if{html}{\figure{runkeeper_export.png}{options: width="80\%" alt="Figure: runkeeper_export.png"}}
+#' \if{latex}{\figure{runkeeper_export.png}{options: width=7cm}}
+#'
+#' Unzip the contents of this \code{.zip} file to a directory (refer to this as \code{gpxdir}).
+#' 
 #' @return data.frame of tracked data
+#' 
 #' @export
 #'
 #' @examples
+#' ## load test data distributed with this package
+#' ## test data is a single track; 
+#' ## a hike around Anstey Hill, Adelaide, South Australia
+#' ## https://en.wikipedia.org/wiki/Anstey_Hill_Recreation_Park
+#' 
 #' routes <- load_tracks(system.file("data", package="runkeepR"))
+#' 
 load_tracks <- function(gpxdir) {
   
   files <- dir(file.path(gpxdir), pattern="\\.gpx", full.names=TRUE)

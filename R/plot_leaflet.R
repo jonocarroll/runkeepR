@@ -51,12 +51,12 @@ points_to_line <- function(data, long, lat, id_field = NULL, sort_field = NULL) 
 #' @param ... other options to pass to addPolylines
 #'
 #' @return NULL (loads a leaflet map)
+#' 
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#'    plot_leaflet(routes, filterType="Walking", trackPal="Accent")
-#' }
+#' \dontrun{plot_leaflet(routes, filterType="Walking", trackPal="Accent")}
+#' 
 plot_leaflet <- function(routes_all, filterType=NULL, trackPal=rainbow(7), ...) {
   
   ## update defaults

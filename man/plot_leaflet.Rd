@@ -22,8 +22,6 @@ NULL (loads a leaflet map)
 Plot the loaded routes using leaflet
 }
 \examples{
-\dontrun{
-   plot_leaflet(routes, filterType="Walking", trackPal="Accent")
-}
+\dontrun{plot_leaflet(routes, filterType="Walking", trackPal="Accent")}
 }
 
