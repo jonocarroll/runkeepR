@@ -11,6 +11,7 @@ read_RK_GPX(gpxfile)
 }
 \value{
 data.frame of track details containing all available details for the tracked routes
+with additional class \code{runkeepR_data}
 }
 \description{
 Raw read of a single \code{.gpx} file. Only applicable to
@@ -21,6 +22,13 @@ For a more general use version see \code{plotKML::readGPx} which fails to
 read in elevation from Runkeeper(TM) files.
 }
 \examples{
+## load test data distributed with this package
+## test data is a single track;
+## a hike around Anstey Hill, Adelaide, South Australia
+## https://en.wikipedia.org/wiki/Anstey_Hill_Recreation_Park
+
 routes <- load_tracks(system.file("data", package="runkeepR"))
+class(routes)
+## [1] "runkeepR_data" "data.frame"
 }
 

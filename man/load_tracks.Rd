@@ -10,7 +10,7 @@ load_tracks(gpxdir)
 \item{gpxdir}{directory containing .gpx files and cardioActivities.csv extracted from a Runkeeper(TM) zip file.}
 }
 \value{
-data.frame of tracked data
+data.frame of tracked data with additional class \code{runkeepR_data}
 }
 \description{
 Starting at \code{gpxdir}, loads all \code{.gpx} files and merges them
@@ -35,5 +35,7 @@ Unzip the contents of this \code{.zip} file to a directory (refer to this as \co
 ## https://en.wikipedia.org/wiki/Anstey_Hill_Recreation_Park
 
 routes <- load_tracks(system.file("data", package="runkeepR"))
+class(routes)
+## [1] "runkeepR_data" "data.frame"
 }
 

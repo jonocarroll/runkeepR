@@ -1,12 +1,14 @@
-### plot routes within x km of geocode
-
-# plot_ggplot <- function(routes_all, center=NULL, latString=NULL, lonString=NULL, idString=NULL, zoom=13, ...) {
-#' Title
+#' Plot Runkeeper(TM) route data using ggplot2
+#' 
+#' This function performs several tasks to produce a layered map of routes. A map, centered 
+#' on the median lat/lon (most common location in the filtered data) at the requested zoom level 
+#' is obtained from Google Maps via the maps API. Routes are then added one by one in 
+#' distinct colours.
 #'
 #' @param routes_all loaded and processed routes
 #' @param filterType classification of routes to filter by (must be an existing type in the routes)
 #' @param trackPal RColorBrewer palette name
-#' @param center where to center the map
+#' @param center where to center the map. Defaults to the median lat/lon from the filtered data.
 #' @param zoom zoom level (1:20; smaller number is tighter zoom)
 #'
 #' @return NULL (plots a ggplot map)

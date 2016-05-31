@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_ggplot.R
 \name{plot_ggplot}
 \alias{plot_ggplot}
-\title{Title}
+\title{Plot Runkeeper(TM) route data using ggplot2}
 \usage{
 plot_ggplot(routes_all, filterType = NULL, trackPal = rainbow(7),
   center = NULL, zoom = 13)
@@ -14,7 +14,7 @@ plot_ggplot(routes_all, filterType = NULL, trackPal = rainbow(7),
 
 \item{trackPal}{RColorBrewer palette name}
 
-\item{center}{where to center the map}
+\item{center}{where to center the map. Defaults to the median lat/lon from the filtered data.}
 
 \item{zoom}{zoom level (1:20; smaller number is tighter zoom)}
 }
@@ -22,9 +22,12 @@ plot_ggplot(routes_all, filterType = NULL, trackPal = rainbow(7),
 NULL (plots a ggplot map)
 }
 \description{
-Title
+This function performs several tasks to produce a layered map of routes. A map, centered
+on the median lat/lon (most common location in the filtered data) at the requested zoom level
+is obtained from Google Maps via the maps API. Routes are then added one by one in
+distinct colours.
 }
 \examples{
-\dontrun{plot_ggplot(routes)}
+\dontrun{plot_ggplot(routes, filterType="Walking", trackPal=rainbow(8), zoom=14)}
 }
 

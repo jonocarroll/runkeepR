@@ -8,13 +8,21 @@
 #' 
 #' @param gpxfile name of the .gpx file to process
 #'
-#' @return data.frame of track details containing all available details for the tracked routes
+#' @return data.frame of track details containing all available details for the tracked routes  
+#' with additional class \code{runkeepR_data}
 #' 
 #' @export
 #'
 #' @examples
-#' routes <- load_tracks(system.file("data", package="runkeepR"))
+#' ## load test data distributed with this package
+#' ## test data is a single track; 
+#' ## a hike around Anstey Hill, Adelaide, South Australia
+#' ## https://en.wikipedia.org/wiki/Anstey_Hill_Recreation_Park
 #' 
+#' routes <- load_tracks(system.file("data", package="runkeepR"))
+#' class(routes) 
+#' ## [1] "runkeepR_data" "data.frame"  
+#'
 read_RK_GPX <- function(gpxfile) {
   
   ret <- xmlTreeParse(gpxfile, useInternalNodes = TRUE)
@@ -41,7 +49,11 @@ read_RK_GPX <- function(gpxfile) {
     }
   }
   
-  return(data.frame(trackid, trkname, trkdesc, latitude, longitude, elevation, time, gpxfile, stringsAsFactors=FALSE))
+  outObject <- data.frame(trackid, trkname, trkdesc, latitude, longitude, elevation, time, gpxfile, stringsAsFactors=FALSE)
+  
+  class(outObject) <- c("runkeepR_data", class(outObject))
+  
+  return(outObject)
 }
 
 
@@ -63,7 +75,7 @@ read_RK_GPX <- function(gpxfile) {
 #'
 #' Unzip the contents of this \code{.zip} file to a directory (refer to this as \code{gpxdir}).
 #' 
-#' @return data.frame of tracked data
+#' @return data.frame of tracked data with additional class \code{runkeepR_data}
 #' 
 #' @export
 #'
@@ -74,7 +86,9 @@ read_RK_GPX <- function(gpxfile) {
 #' ## https://en.wikipedia.org/wiki/Anstey_Hill_Recreation_Park
 #' 
 #' routes <- load_tracks(system.file("data", package="runkeepR"))
-#' 
+#' class(routes) 
+#' ## [1] "runkeepR_data" "data.frame"  
+#'
 load_tracks <- function(gpxdir) {
   
   files <- dir(file.path(gpxdir), pattern="\\.gpx", full.names=TRUE)
@@ -110,6 +124,8 @@ load_tracks <- function(gpxdir) {
   
   ## re-arrange, put POSIX fields next to each other
   routes_all %<>% select(gpxfile, trkname, trkdesc, Type, trackid, Date, Year, Month, Day, time, Duration, Duration..seconds., everything())
+  
+  class(routes_all) <- c("runkeepR_data", class(routes_all))
   
   return(routes_all)
   
