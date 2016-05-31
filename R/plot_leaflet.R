@@ -52,6 +52,8 @@ points_to_line <- function(data, long, lat, id_field = NULL, sort_field = NULL) 
 #'
 #' @return NULL (loads a leaflet map)
 #' 
+#' @importFrom grDevices rainbow
+#' 
 #' @export
 #'
 #' @examples

@@ -7,4 +7,16 @@ Author: J. Carroll [aut, cre]
 Maintainer: J. Carroll <jono@jcarroll.com.au>
 Description: Extract, analyse, and plot Runkeeper(TM) data
 License: What license is it under?
-Depends: magrittr, dplyr, XML, ggmap, lubridate, ggplot2, tidyr, sp, maptools, shiny, leaflet, shinydashboard
+Imports:
+  magrittr, 
+  dplyr, 
+  XML,
+  ggmap, 
+  lubridate, 
+  ggplot2, 
+  tidyr, 
+  sp, 
+  maptools, 
+  shiny, 
+  leaflet, 
+  shinydashboard

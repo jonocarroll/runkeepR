@@ -26,8 +26,9 @@ Maintainer: \packageMaintainer{runkeepR}
 
 \examples{
 \dontrun{
+library(runkeepR)
 system.file("data", package="runkeepR")
-routes <- load_tracks(system.file("data", package="runkeepR"))
+routes <- load_tracks(system.file("extdata", package="runkeepR"))
 plot_leaflet(routes, trackPal=topo.colors(10, alpha=0.5))
 }
 

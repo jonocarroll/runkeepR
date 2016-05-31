@@ -11,6 +11,8 @@
 #' @return data.frame of track details containing all available details for the tracked routes  
 #' with additional class \code{runkeepR_data}
 #' 
+#' @import XML
+#' 
 #' @export
 #'
 #' @examples
@@ -19,7 +21,8 @@
 #' ## a hike around Anstey Hill, Adelaide, South Australia
 #' ## https://en.wikipedia.org/wiki/Anstey_Hill_Recreation_Park
 #' 
-#' routes <- load_tracks(system.file("data", package="runkeepR"))
+#' library(runkeepR)
+#' routes <- load_tracks(system.file("extdata", package="runkeepR"))
 #' class(routes) 
 #' ## [1] "runkeepR_data" "data.frame"  
 #'
@@ -70,12 +73,17 @@ read_RK_GPX <- function(gpxfile) {
 #' You can get a zipped export of your Runkeeper(TM) data from the logged-in settings page 
 #' on Runkeeper's website, e.g. runkeeper-data-export-12517482-2016-05-20-1550.zip.
 #'
-#' \if{html}{\figure{runkeeper_export.png}{options: width="80\%" alt="Figure: runkeeper_export.png"}}
-#' \if{latex}{\figure{runkeeper_export.png}{options: width=7cm}}
+#' \if{html}{\figure{runkeeperexport.png}{options: width="80\%" alt="Figure: runkeeperexport.png"}}
+#' \if{latex}{\figure{runkeeperexport.png}{options: width=7cm}}
 #'
 #' Unzip the contents of this \code{.zip} file to a directory (refer to this as \code{gpxdir}).
 #' 
 #' @return data.frame of tracked data with additional class \code{runkeepR_data}
+#' 
+#' @import magrittr
+#' @import dplyr
+#' @importFrom lubridate year month day
+#' @importFrom utils read.csv
 #' 
 #' @export
 #'
@@ -85,7 +93,8 @@ read_RK_GPX <- function(gpxfile) {
 #' ## a hike around Anstey Hill, Adelaide, South Australia
 #' ## https://en.wikipedia.org/wiki/Anstey_Hill_Recreation_Park
 #' 
-#' routes <- load_tracks(system.file("data", package="runkeepR"))
+#' library(runkeepR)
+#' routes <- load_tracks(system.file("extdata", package="runkeepR"))
 #' class(routes) 
 #' ## [1] "runkeepR_data" "data.frame"  
 #'

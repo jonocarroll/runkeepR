@@ -13,6 +13,9 @@
 #'
 #' @return NULL (plots a ggplot map)
 #' 
+#' @importFrom grDevices rainbow
+#' @importFrom stats median time
+#'  
 #' @export
 #'
 #' @examples

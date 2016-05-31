@@ -1,3 +1,14 @@
+#' Show a summary of the Runkeeper(TM) data
+#'
+#' @param rundata the data to process
+#' @param by grouping category. Default is \code{trkname}; the unique tracks. 
+#' @param dashboard present the information in a shinydashboard?
+#'
+#' @importFrom graphics box
+#'
+#' @return NULL
+#' @export
+#'
 summarise_runs <- function(rundata, by="trkname", dashboard=TRUE) {
   
   rundata$yday <- yday(rundata$Date)

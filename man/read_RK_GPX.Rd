@@ -27,7 +27,8 @@ read in elevation from Runkeeper(TM) files.
 ## a hike around Anstey Hill, Adelaide, South Australia
 ## https://en.wikipedia.org/wiki/Anstey_Hill_Recreation_Park
 
-routes <- load_tracks(system.file("data", package="runkeepR"))
+library(runkeepR)
+routes <- load_tracks(system.file("extdata", package="runkeepR"))
 class(routes)
 ## [1] "runkeepR_data" "data.frame"
 }
