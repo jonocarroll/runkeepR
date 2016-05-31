@@ -27,8 +27,13 @@ library(runkeepR)
 routes <- load_tracks(".")
 save(routes, file="saved_routes.rds")
 load("saved_routes.rds")
-plot_leaflet(routes)
+plot_leaflet(routes, trackPal=topo.colors(10, alpha=0.5))
 summarise_runs(routes)
+
+setwd("~/Dropbox/Freelancer/runkeepR/data/")
+routes <- load_tracks(".")
+summarise_runs(routes)
+plot_leaflet(routes)
 
 ## multiple tracks: ./data/2012-09-06-0702.gpx
 # data <- xmlTreeParse("./data/2012-09-06-0702.gpx")
