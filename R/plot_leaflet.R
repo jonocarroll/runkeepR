@@ -1,3 +1,19 @@
+#' Convert points to lines
+#'
+#' @references \url{https://rpubs.com/walkerke/points_to_line}
+#'
+#' @param data the data
+#' @param long longitude
+#' @param lat latitude
+#' @param id_field id field
+#' @param sort_field sort field
+#'
+#' @import sp 
+#'
+#' @return lines object (?)
+#' 
+#' @keywords Internal
+#'
 points_to_line <- function(data, long, lat, id_field = NULL, sort_field = NULL) {
   
   ## courtesy https://rpubs.com/walkerke/points_to_line
@@ -32,8 +48,8 @@ points_to_line <- function(data, long, lat, id_field = NULL, sort_field = NULL) 
     # I like for loops, what can I say...
     for (p in 2:length(paths)) {
       id <- paste0("line", as.character(p))
-      l <- SpatialLines(list(Lines(list(Line(paths[[p]])), id)))
-      sp_lines <- spRbind(sp_lines, l)
+      l  <- SpatialLines(list(Lines(list(Line(paths[[p]])), id)))
+      sp_lines <- maptools::spRbind(sp_lines, l)
     }
     
     return(sp_lines)
@@ -48,18 +64,19 @@ points_to_line <- function(data, long, lat, id_field = NULL, sort_field = NULL) 
 #' @param routes_all loaded and processed routes
 #' @param filterType classification of routes to filter by (must be an existing type in the routes)
 #' @param trackPal RColorBrewer palette name
-#' @param ... other options to pass to addPolylines
+###' ##@param ... other options to pass to addPolylines
 #'
 #' @return NULL (loads a leaflet map)
 #' 
 #' @importFrom grDevices rainbow
+#' @import     leaflet
 #' 
 #' @export
 #'
 #' @examples
 #' \dontrun{plot_leaflet(routes, filterType="Walking", trackPal="Accent")}
 #' 
-plot_leaflet <- function(routes_all, filterType=NULL, trackPal=rainbow(7), ...) {
+plot_leaflet <- function(routes_all, filterType=NULL, trackPal=rainbow(7)) {
   
   ## update defaults
   # latString <- ifelse(is.null(latString), "latitude",  latString) 
@@ -82,7 +99,7 @@ plot_leaflet <- function(routes_all, filterType=NULL, trackPal=rainbow(7), ...) 
   ## filter by type if requested
   if(!is.null(filterType)) {
     if(filterType %in% unique(routes_all$Type)) {
-      routes_filtered <- routes_all %>% filter(Type==filterType)
+      routes_filtered <- routes_all %>% filter_(~Type==filterType)
     } else {
       stop("filterType must be a Type classification in the data.")
     }
@@ -123,13 +140,16 @@ plot_leaflet <- function(routes_all, filterType=NULL, trackPal=rainbow(7), ...) 
   # rtnames <- unique(routes_all[[idString]])[order(unique(routes_all$trkname))]
   rtnames <- ifelse(!is.null(idString), sort(unique(routes_filtered[[idString]])), unique(routes_filtered$trkname))
   for(group in 1:length(routes_lines)){
-    # map <- addPolylines(map, lng=~longitude, lat=~latitude, 
-    map <- addPolylines(map, lng=~get(lonString), lat=~get(latString), 
+    map <- addPolylines(map, lng=~longitude, lat=~latitude,
+    # map <- addPolylines(map, lng=~lonString, lat=~latString, 
+    # map <- addPolylines(map, lng=~lonString, lat=~latString, 
                         data=data.frame(routes_lines@lines[[group]]@Lines[[1]]@coords), color=~factpal(group),
                         # data=data.frame(routes_lines@lines[[group]]@Lines[[1]]@coords), color=sample(cols, 1),
-                        popup=paste0("ID: ",group,"; ",rtnames[group]), ...)
+                        popup=paste0("ID: ",group,"; ",rtnames[group]))
   }
  
   print(map)
+  
+  return(NULL)
   
 }

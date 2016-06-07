@@ -4,16 +4,15 @@
 \alias{plot_leaflet}
 \title{Plot the loaded routes using leaflet}
 \usage{
-plot_leaflet(routes_all, filterType = NULL, trackPal = rainbow(7), ...)
+plot_leaflet(routes_all, filterType = NULL, trackPal = rainbow(7))
 }
 \arguments{
 \item{routes_all}{loaded and processed routes}
 
 \item{filterType}{classification of routes to filter by (must be an existing type in the routes)}
 
-\item{trackPal}{RColorBrewer palette name}
-
-\item{...}{other options to pass to addPolylines}
+\item{trackPal}{RColorBrewer palette name
+##@param ... other options to pass to addPolylines}
 }
 \value{
 NULL (loads a leaflet map)

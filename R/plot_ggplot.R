@@ -15,6 +15,9 @@
 #' 
 #' @importFrom grDevices rainbow
 #' @importFrom stats median time
+#' @import     ggplot2
+#' @importFrom ggmap geocode ggmap get_map
+#' @import     dplyr
 #'  
 #' @export
 #'
@@ -43,7 +46,7 @@ plot_ggplot <- function(routes_all, filterType=NULL, trackPal=rainbow(7), center
   ## filter by type if requested
   if(!is.null(filterType)) {
     if(filterType %in% unique(routes_all$Type)) {
-      routes_filtered <- routes_all %>% filter(Type==filterType)
+      routes_filtered <- routes_all %>% filter_(~Type==filterType)
     } else {
       stop("filterType must be a Type classification in the data.")
     }
@@ -71,7 +74,7 @@ plot_ggplot <- function(routes_all, filterType=NULL, trackPal=rainbow(7), center
                      zoom     = zoom)
 
   # my.points <- routes_filtered %>% select(y=get(latString), x=get(lonString))
-  my.points <- routes_filtered %>% select(y=latitude, x=longitude)
+  my.points <- routes_filtered %>% select_(y="latitude", x="longitude")
   my.shape  <- attr(thisMap, "bb")
   my.shape.df <- with(my.shape, data.frame(x=c(ll.lon, ur.lon), y=c(ll.lat, ur.lat)))
 
@@ -102,9 +105,9 @@ plot_ggplot <- function(routes_all, filterType=NULL, trackPal=rainbow(7), center
   factpal <- colorFactor(trackPal, domain=routeIds)
     
   for (i in routeIds) {
-    currRoute <- subset(routes_box, trkname==i)
+    currRoute <- subset(routes_box, ~trkname==i)
       # g <- g + geom_path(aes(y=get(latString), x=get(lonString), group=1), color=factpal(i), data=currRoute, lwd=0.6)
-      g <- g + geom_path(aes(y=latitude, x=longitude, group=1), color=factpal(i), data=currRoute, lwd=0.6)
+      g <- g + geom_path(aes_(y=~latitude, x=~longitude, group=1), color=factpal(i), data=currRoute, lwd=0.6)
   }
   
   # polygon <- expand.grid(my.shape)
@@ -126,7 +129,7 @@ plot_ggplot <- function(routes_all, filterType=NULL, trackPal=rainbow(7), center
   
   print(g)
   
-  
+  return(invisible(NULL))
   # dev.off()
   
 }

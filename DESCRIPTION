@@ -19,7 +19,8 @@ Imports:
     maptools,
     shiny,
     leaflet,
-    shinydashboard
+    shinydashboard,
+    lazyeval
 Suggests:
     testthat
 LazyData: true
