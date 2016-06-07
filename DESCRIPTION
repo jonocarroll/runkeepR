@@ -20,5 +20,8 @@ Imports:
     shiny,
     leaflet,
     shinydashboard
+Suggests:
+    testthat
 LazyData: true
 RoxygenNote: 5.0.1
+Suggests: testthat
