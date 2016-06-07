@@ -28,8 +28,8 @@
 #'
 read_RK_GPX <- function(gpxfile) {
   
-  ret <- xmlTreeParse(gpxfile, useInternalNodes = TRUE)
-  top <- xmlRoot(ret)  
+  ret     <- xmlTreeParse(gpxfile, useInternalNodes = TRUE)
+  top     <- xmlRoot(ret)  
   trkname <- xmlValue(top[[1]][[1]])
   trkdesc <- as.POSIXct(xmlValue(top[[1]][[2]]), format="%Y-%m-%dT%H:%M:%SZ", tz="UTC")
   
@@ -42,13 +42,14 @@ read_RK_GPX <- function(gpxfile) {
   time      <- c(.POSIXct(character(0)))
   
   for (itrack in 2+seq_len(ntracks)) {  
-    longitude <- c(longitude, as.numeric(xmlSApply(top[[1]][[itrack]], xmlGetAttr, "lon")))
-    this_latitude <- as.numeric(xmlSApply(top[[1]][[itrack]], xmlGetAttr, "lat"))
-    latitude  <- c(latitude, this_latitude)
-    trackid   <- c(trackid, rep(itrack - 2, length(this_latitude)))
-    for (ipt in 1:length(xmlChildren(top[[1]][[itrack]]))) {
-      elevation <- c(elevation, as.numeric(xmlSApply(top[[1]][[itrack]][[ipt]], xmlValue)[["ele"]]))
-      time      <- c(time, as.POSIXct(xmlSApply(top[[1]][[itrack]][[ipt]], xmlValue)[["time"]], format="%Y-%m-%dT%H:%M:%SZ"))
+    top1track     <- top[[1]][[itrack]]
+    longitude     <- c(longitude, as.numeric(xmlSApply(top1track, xmlGetAttr, "lon")))
+    this_latitude <- as.numeric(xmlSApply(top1track, xmlGetAttr, "lat"))
+    latitude      <- c(latitude, this_latitude)
+    trackid       <- c(trackid, rep(itrack - 2, length(this_latitude)))
+    for (ipt in 1:length(xmlChildren(top1track))) {
+      elevation <- c(elevation, as.numeric(xmlSApply(top1track[[ipt]], xmlValue)[["ele"]]))
+      time      <- c(time, as.POSIXct(xmlSApply(top1track[[ipt]], xmlValue)[["time"]], format="%Y-%m-%dT%H:%M:%SZ"))
     }
   }
   
