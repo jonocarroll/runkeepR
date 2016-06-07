@@ -1,22 +1,24 @@
 Package: runkeepR
 Type: Package
 Title: Extract, analyse, and plot Runkeeper(TM) data
-Version: 0.1
-Date: 2016-05-16
-Author: J. Carroll [aut, cre]
+Version: 0.0.09000
+Date: 2016-06-07
+Authors@R: c(person("Jonathan", "Carroll", , "jono@jcarroll.com.au", c("aut", "cre")))
 Maintainer: J. Carroll <jono@jcarroll.com.au>
 Description: Extract, analyse, and plot Runkeeper(TM) data
-License: What license is it under?
+License: GPL-3
 Imports:
-  magrittr, 
-  dplyr, 
-  XML,
-  ggmap, 
-  lubridate, 
-  ggplot2, 
-  tidyr, 
-  sp, 
-  maptools, 
-  shiny, 
-  leaflet, 
-  shinydashboard
+    magrittr,
+    dplyr,
+    XML,
+    ggmap,
+    lubridate,
+    ggplot2,
+    tidyr,
+    sp,
+    maptools,
+    shiny,
+    leaflet,
+    shinydashboard
+LazyData: true
+RoxygenNote: 5.0.1
