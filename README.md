@@ -27,7 +27,7 @@ load the installed package
     
 You can get a zipped export of your Runkeeper(TM) data from the [logged-in settings page on Runkeeper's website](https://runkeeper.com/exportDataForm), _e.g._ `runkeeper-data-export-12517482-2016-05-20-1550.zip`.
     
-<img src="https://github.com/jonocarroll/runkeepR/blob/master/img/runkeeper_export.png?height=600">
+<img src="https://github.com/jonocarroll/runkeepR/blob/master/extdata/img/runkeeper_export.png?height=600">
     
 Save the `.zip` file to a directory (e.g. `~/runkeepR-test/`) and unzip the contents (mainly `.gpx` files and a couple of `.csv` files). Set this directory as your working directory in `R`.
 
@@ -43,15 +43,15 @@ The data can be plotted either with `ggplot`
     load("saved_routes.rds")
     plot_ggplot(routes, center="Adelaide, Australia", zoom=14)
 
-<img src="https://github.com/jonocarroll/runkeepR/blob/master/img/all_data_ggplot.png?height=600">
+<img src="https://github.com/jonocarroll/runkeepR/blob/master/extdata/img/all_data_ggplot.png?height=600">
 
 or `leaflet`; this plots all paths but is clever about which ones to load depending on the current viewport, so it's faster. 
 
     load("saved_routes.rds")
     plot_leaflet(routes)
 
-<img src="https://github.com/jonocarroll/runkeepR/blob/master/img/all_data_leaflet.png?height=600">
-<img src="https://github.com/jonocarroll/runkeepR/blob/master/img/all_data_leaflet_home.png?height=600">
+<img src="https://github.com/jonocarroll/runkeepR/blob/master/extdata/img/all_data_leaflet.png?height=600">
+<img src="https://github.com/jonocarroll/runkeepR/blob/master/extdata/img/all_data_leaflet_home.png?height=600">
 
 Summary statistics can be viewed 
 
@@ -63,10 +63,10 @@ and presented in a `shinydashboard`
 
 summarised either monthly 
 
-<img src="https://github.com/jonocarroll/runkeepR/blob/master/img/shiny_dashboard_monthly.png?height=600">
+<img src="https://github.com/jonocarroll/runkeepR/blob/master/extdata/img/shiny_dashboard_monthly.png?height=600">
 
 or daily
 
-<img src="https://github.com/jonocarroll/runkeepR/blob/master/img/shiny_dashboard_daily.png?height=600">
+<img src="https://github.com/jonocarroll/runkeepR/blob/master/extdata/img/shiny_dashboard_daily.png?height=600">
 
 Not affiliated with Runkeeper(TM). Runkeeper(TM) logo © FitnessKeeper 2016

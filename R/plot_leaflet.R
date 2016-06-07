@@ -18,6 +18,10 @@ points_to_line <- function(data, long, lat, id_field = NULL, sort_field = NULL) 
   
   ## courtesy https://rpubs.com/walkerke/points_to_line
   
+  # if(inherits(data, "runkeepR_data")) 
+    # data <- removeClass(data, )
+  data <- data.frame(data)
+  
   # Convert to SpatialPointsDataFrame
   coordinates(data) <- c(long, lat)
   
