@@ -1,2 +1,4 @@
 * add examples directory to run automatically
-* 
+* implement vapply() over sapply()
+* run static analysis (lintr)
+* run code coverage (covr)
