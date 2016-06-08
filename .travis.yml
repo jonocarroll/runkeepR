@@ -40,17 +40,10 @@ r_binary_install:
 #   - ./travis-tool.sh install_r tidyr
 
 r_packages:
-#  - devtools
-#  - rgeos
-##  - rgdal
-#  - raster
-#  - sp
-#  - leaflet
-#  - shiny
-#  - knitr
-#  - covr
-#  - rmarkdown
-#  - testthat
+  - covr
+
+after_success:
+  - Rscript -e 'library(covr); codecov()'
   
 #after_success:
 #  - Rscript -e 'covr::codecov()'
@@ -58,5 +51,5 @@ r_packages:
 #r_github_packages:
 #  - jimhester/covr
 
-after_success:
-  - Rscript -e 'covr::codecov()'
+#after_success:
+#  - Rscript -e 'covr::codecov()'
