@@ -18,10 +18,13 @@ env:
 r_build_args: --no-build-vignettes --no-manual --no-resave-data
 r_check_args: --no-build-vignettes --no-manual
 
-install:
-  - Rscript -e "if (!require('devtools')) install.packages('devtools')"
-  - Rscript -e "devtools::install_deps(dep = TRUE)"
-  - Rscript -e "devtools::install_github('jimhester/covr')"
+#install:
+#  - Rscript -e "if (!require('devtools')) install.packages('devtools')"
+#  - Rscript -e "devtools::install_deps(dep = TRUE)"
+#  - Rscript -e "devtools::install_github('jimhester/covr')"
+
+r_github_packages:
+  - jimhester/covr
 
 r_binary_install:
   - magrittr
