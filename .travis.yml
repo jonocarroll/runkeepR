@@ -22,8 +22,8 @@ install:
   - Rscript -e "if (!require('devtools')) install.packages('devtools')"
   - Rscript -e "devtools::install_deps(dep = TRUE)"
 
-r_github_packages:
-  - jimhester/covr
+#r_github_packages:
+#  - jimhester/covr
 
 r_binary_install:
   - magrittr
@@ -31,4 +31,5 @@ r_binary_install:
   - XML
 
 after_success:
-  - Rscript -e 'covr::codecov()'
+  - bash <(curl -s https://codecov.io/bash)
+  
