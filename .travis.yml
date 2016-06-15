@@ -18,45 +18,19 @@ env:
 r_build_args: --no-build-vignettes --no-manual --no-resave-data
 r_check_args: --no-build-vignettes --no-manual
 
-install:
-  - Rscript -e "if (!require('devtools')) install.packages('devtools')"
-  - Rscript -e "devtools::install_deps(dep = TRUE)"
+#install:
+#  - Rscript -e "if (!require('devtools')) install.packages('devtools')"
+#  - Rscript -e "devtools::install_deps(dep = TRUE)"
+#  - Rscript -e "devtools::install_github('jimhester/covr')"
+
+r_github_packages:
+  - jimhester/covr
 
 r_binary_install:
   - magrittr
   - dplyr
   - XML
-  
-#after_success:
-#  - Rscript -e 'covr::codecov()'
- 
-#  - ./travis-tool.sh install_aptget r-cran-rcpp libquantlib0-dev r-cran-runit r-cran-rgl littler r-cran-shiny
-#   - ./travis-tool.sh install_aptget r-cran-rgl r-cran-zoo
-#  - ./travis-tool.sh install_r magrittr
-#   - ./travis-tool.sh install_r dplyr
-#   - ./travis-tool.sh install_r plotKML
-#   - ./travis-tool.sh install_r lubridate
-#   - ./travis-tool.sh install_r ggplot2
-#   - ./travis-tool.sh install_r tidyr
-
-r_packages:
-#  - devtools
-#  - rgeos
-##  - rgdal
-#  - raster
-#  - sp
-#  - leaflet
-#  - shiny
-#  - knitr
-#  - covr
-#  - rmarkdown
-#  - testthat
-  
-#after_success:
-#  - Rscript -e 'covr::codecov()'
- 
-#r_github_packages:
-#  - jimhester/covr
 
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+  - Rscript -e 'library(covr); codecov()'
+  
