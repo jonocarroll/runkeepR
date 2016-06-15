@@ -22,7 +22,7 @@
 #' ## https://en.wikipedia.org/wiki/Anstey_Hill_Recreation_Park
 #' 
 #' library(runkeepR)
-#' routes <- load_tracks(system.file("extdata", package="runkeepR"))
+#' routes <- load_tracks(system.file("extdata", package = "runkeepR"))
 #' class(routes) 
 #' ## [1] "runkeepR_data" "data.frame"  
 #'
@@ -31,7 +31,7 @@ read_RK_GPX <- function(gpxfile) {
   ret     <- xmlTreeParse(gpxfile, useInternalNodes = TRUE)
   top     <- xmlRoot(ret)  
   trkname <- xmlValue(top[[1]][[1]])
-  trkdesc <- as.POSIXct(xmlValue(top[[1]][[2]]), format="%Y-%m-%dT%H:%M:%SZ", tz="UTC")
+  trkdesc <- as.POSIXct(xmlValue(top[[1]][[2]]), format = "%Y-%m-%dT%H:%M:%SZ", tz = "UTC")
   
   ## (length - 2) because we're subtracting name and description
   ntracks <- length(xmlChildren(top[[1]])) - 2 
@@ -42,7 +42,7 @@ read_RK_GPX <- function(gpxfile) {
   elevation <- c()
   time      <- c(.POSIXct(character(0)))
   
-  for (itrack in 2+seq_len(ntracks)) {  
+  for (itrack in (2 + seq_len(ntracks))) {  
     top1track     <- top[[1]][[itrack]]
     longitude     <- c(longitude, as.numeric(xmlSApply(top1track, xmlGetAttr, "lon")))
     this_latitude <- as.numeric(xmlSApply(top1track, xmlGetAttr, "lat"))
@@ -50,11 +50,11 @@ read_RK_GPX <- function(gpxfile) {
     trackid       <- c(trackid, rep(itrack - 2, length(this_latitude)))
     for (ipt in 1:length(xmlChildren(top1track))) {
       elevation <- c(elevation, as.numeric(xmlSApply(top1track[[ipt]], xmlValue)[["ele"]]))
-      time      <- c(time, as.POSIXct(xmlSApply(top1track[[ipt]], xmlValue)[["time"]], format="%Y-%m-%dT%H:%M:%SZ"))
+      time      <- c(time, as.POSIXct(xmlSApply(top1track[[ipt]], xmlValue)[["time"]], format = "%Y-%m-%dT%H:%M:%SZ"))
     }
   }
   
-  outObject <- data.frame(trackid, trkname, trkdesc, latitude, longitude, elevation, time, gpxfile, stringsAsFactors=FALSE)
+  outObject <- data.frame(trackid, trkname, trkdesc, latitude, longitude, elevation, time, gpxfile, stringsAsFactors = FALSE)
   
   class(outObject) <- c("runkeepR_data", class(outObject))
   
@@ -96,27 +96,30 @@ read_RK_GPX <- function(gpxfile) {
 #' ## https://en.wikipedia.org/wiki/Anstey_Hill_Recreation_Park
 #' 
 #' library(runkeepR)
-#' routes <- load_tracks(system.file("extdata", package="runkeepR"))
+#' routes <- load_tracks(system.file("extdata", package = "runkeepR"))
 #' class(routes) 
 #' ## [1] "runkeepR_data" "data.frame"  
 #'
 load_tracks <- function(gpxdir) {
   
-  files <- dir(file.path(gpxdir), pattern="\\.gpx", full.names=TRUE)
+  files <- dir(file.path(gpxdir), pattern = "\\.gpx", full.names = TRUE)
   
   routes_list <- lapply(files, read_RK_GPX)
   
-  routes <- as.data.frame(do.call(rbind, routes_list), stringsAsFactors=FALSE)  
+  routes <- as.data.frame(do.call(rbind, routes_list), stringsAsFactors = FALSE)  
   
   # save(routes, file="~/Dropbox/Freelancer/runkeepR/example/routes_all.rds")
   
-  meta_data <- read.csv(file.path(gpxdir, "cardioActivities.csv"), stringsAsFactors=FALSE)
+  meta_data <- read.csv(file.path(gpxdir, "cardioActivities.csv"), stringsAsFactors = FALSE)
   # meta_data %<>% mutate_(gpxfile=lazyeval::interp(~ifelse(y=="", NA, paste0(path.expand(gpxdir),"/",y)), y="GPX.File"), "GPX.File"=NULL)
-  meta_data %<>% mutate_(gpxfile=lazyeval::interp(~ifelse(y=="", NA, paste0(path.expand(gpxdir),"/",y)), y=as.name("GPX.File")))
+  meta_data %<>% mutate_(gpxfile = lazyeval::interp(~ifelse(y == "", 
+                                                            NA, 
+                                                            paste0(path.expand(gpxdir),"/",y)), 
+                                                    y = as.name("GPX.File")))
   
   # Bind routes
   # routes <- left_join(routes, meta_data, by="gpxfile") %>% arrange(index)
-  routes_all <- merge(meta_data, routes, by="gpxfile") %>% arrange_(~time)
+  routes_all <- merge(meta_data, routes, by = "gpxfile") %>% arrange_(~time)
   
   ## process dates
   routes_all$Date  <- as.POSIXct(routes_all$Date)
@@ -125,17 +128,21 @@ load_tracks <- function(gpxdir) {
   routes_all$Day   <- day(routes_all$Date)
   
   ## copy durations to total minutes
-  routes_all$Duration..seconds. <- unlist(lapply(strsplit(routes_all$Duration, ":"), function(x) {
-    x <- as.integer(x)
-    if(length(x)==3) {
-      x[1]*60L*60L + x[2]*60L + x[3]
-    } else if(length(x)==2) {
-      x[1]*60L + x[2]
-    }
-  }))
+  routes_all$Duration..seconds. <- unlist(lapply(strsplit(routes_all$Duration, ":"), 
+                                                 function(x) {
+                                                   x <- as.integer(x)
+                                                   if (length(x) == 3) {
+                                                     x[1] * 60L * 60L + x[2] * 60L + x[3]
+                                                   } else if (length(x) == 2) {
+                                                     x[1] * 60L + x[2]
+                                                   }
+                                                 }))
   
   ## re-arrange, put POSIX fields next to each other
-  routes_all %<>% select_("gpxfile", "trkname", "trkdesc", "Type", "trackid", "Date", "Year", "Month", "Day", "time", "Duration", "Duration..seconds.", lazyeval::interp(~everything()))
+  routes_all %<>% select_("gpxfile", "trkname", "trkdesc", "Type", 
+                          "trackid", "Date", "Year", "Month", "Day", 
+                          "time", "Duration", "Duration..seconds.", 
+                          lazyeval::interp(~everything()))
   
   class(routes_all) <- c("runkeepR_data", class(routes_all))
   
