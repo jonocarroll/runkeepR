@@ -75,11 +75,11 @@ points_to_line <- function(data, long, lat, id_field = NULL, sort_field = NULL) 
 #' @importFrom grDevices rainbow
 #' @import     leaflet
 #' 
-#' @export
 #'
 #' @examples
 #' \dontrun{plot_leaflet(routes, filterType="Walking", trackPal="Accent")}
 #' 
+#' @export
 plot_leaflet <- function(routes_all, filterType=NULL, trackPal=rainbow(7)) {
   
   ## update defaults

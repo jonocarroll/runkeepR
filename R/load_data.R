@@ -13,7 +13,6 @@
 #' 
 #' @import XML
 #' 
-#' @export
 #'
 #' @examples
 #' ## load test data distributed with this package
@@ -26,6 +25,7 @@
 #' class(routes) 
 #' ## [1] "runkeepR_data" "data.frame"  
 #'
+#' @export
 read_RK_GPX <- function(gpxfile) {
   
   ret     <- xmlTreeParse(gpxfile, useInternalNodes = TRUE)

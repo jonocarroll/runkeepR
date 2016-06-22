@@ -19,11 +19,11 @@
 #' @importFrom ggmap geocode ggmap get_map
 #' @import     dplyr
 #'  
-#' @export
 #'
 #' @examples
 #' \dontrun{plot_ggplot(routes, filterType="Walking", trackPal=rainbow(8), zoom=14)}
 #' 
+#' @export
 plot_ggplot <- function(routes_all, filterType=NULL, trackPal=rainbow(7), center=NULL, zoom=13) {
   
   # Adelaide <- geocode("Adelaide, Australia")
