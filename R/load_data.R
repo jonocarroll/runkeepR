@@ -40,7 +40,7 @@ read_RK_GPX <- function(gpxfile) {
   latitude  <- c()
   trackid   <- c()
   elevation <- c()
-  time      <- c(.POSIXct(character(0)))
+  time      <- c(as.POSIXct(character(0)))
   
   for (itrack in (2 + seq_len(ntracks))) {  
     top1track     <- top[[1]][[itrack]]
