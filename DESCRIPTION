@@ -1,10 +1,13 @@
 Package: runkeepR
 Type: Package
 Title: Extract, analyse, and plot Runkeeper(TM) data
-Version: 0.0.09000
-Date: 2016-06-07
-Authors@R: c(person("Jonathan", "Carroll", , "jono@jcarroll.com.au", c("aut", "cre")))
-Maintainer: J. Carroll <jono@jcarroll.com.au>
+Version: 0.0.1
+Date: 2022-02-04
+Authors@R: person("Jonathan", "Carroll", 
+ email = "rpkg@jcarroll.com.au", 
+ role = c("aut", "cre"), 
+ comment = c(ORCID = "0000-0002-1404-5264"))
+Maintainer: Jonathan Carroll <rpkg@jcarroll.com.au>
 Description: Extract, analyse, and plot Runkeeper(TM) data. 
     Results can be plotted in either ggplot2 or leaflet. A shinydashboard is also presented 
     summarising metrics over time. Subsettable by activity type.
