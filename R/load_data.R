@@ -56,7 +56,7 @@ read_RK_GPX <- function(gpxfile) {
   
   outObject <- data.frame(trackid, trkname, trkdesc, latitude, longitude, elevation, time, gpxfile, stringsAsFactors = FALSE)
   
-  class(outObject) <- c("runkeepR_data", class(outObject))
+  # class(outObject) <- c("runkeepR_data", class(outObject))
   
   return(outObject)
 }
@@ -147,7 +147,7 @@ load_tracks <- function(gpxdir) {
                          "time", "Duration", "Duration..seconds.", 
                          everything())
   
-  class(routes_all) <- c("runkeepR_data", class(routes_all))
+  # class(routes_all) <- c("runkeepR_data", class(routes_all))
   
   return(routes_all)
   
