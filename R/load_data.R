@@ -112,14 +112,17 @@ load_tracks <- function(gpxdir) {
   
   meta_data <- read.csv(file.path(gpxdir, "cardioActivities.csv"), stringsAsFactors = FALSE)
   # meta_data %<>% mutate_(gpxfile=lazyeval::interp(~ifelse(y=="", NA, paste0(path.expand(gpxdir),"/",y)), y="GPX.File"), "GPX.File"=NULL)
-  meta_data %<>% mutate_(gpxfile = lazyeval::interp(~ifelse(y == "", 
-                                                            NA, 
-                                                            paste0(path.expand(gpxdir),"/",y)), 
-                                                    y = as.name("GPX.File")))
+  # meta_data %<>% mutate_(gpxfile = lazyeval::interp(~ifelse(y == "", 
+  #                                                           NA, 
+  #                                                           paste0(path.expand(gpxdir),"/",y)), 
+  #                                                   y = as.name("GPX.File")))
+  meta_data %<>%
+    dplyr::mutate(gpxfile = dplyr::case_when(.data$GPX.File == "" ~ NA_character_,
+                                             TRUE ~ file.path(path.expand(gpxdir), .data$GPX.File)))
   
   # Bind routes
   # routes <- left_join(routes, meta_data, by="gpxfile") %>% arrange(index)
-  routes_all <- merge(meta_data, routes, by = "gpxfile") %>% arrange_(~time)
+  routes_all <- merge(meta_data, routes, by = "gpxfile")
   
   ## process dates
   routes_all$Date  <- as.POSIXct(routes_all$Date)
@@ -139,10 +142,10 @@ load_tracks <- function(gpxdir) {
                                                  }))
   
   ## re-arrange, put POSIX fields next to each other
-  routes_all %<>% select_("gpxfile", "trkname", "trkdesc", "Type", 
-                          "trackid", "Date", "Year", "Month", "Day", 
-                          "time", "Duration", "Duration..seconds.", 
-                          lazyeval::interp(~everything()))
+  routes_all %<>% select("gpxfile", "trkname", "trkdesc", "Type", 
+                         "trackid", "Date", "Year", "Month", "Day", 
+                         "time", "Duration", "Duration..seconds.", 
+                         everything())
   
   class(routes_all) <- c("runkeepR_data", class(routes_all))
   

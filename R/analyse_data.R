@@ -21,7 +21,7 @@ summarise_runs <- function(rundata, by = "trkname", dashboard = TRUE) {
   numcols["Date"] <- TRUE
   numcols[by]     <- TRUE
   
-  numdata <- rundata[numcols] %>% select_(quote(-latitude), quote(-longitude)) %>% unique
+  numdata <- rundata[numcols] %>% select(-latitude, -longitude) %>% unique
   
   numdata$monthBin <- as.character(cut(as.Date(numdata$Date), breaks = "month"))
   
@@ -51,7 +51,7 @@ summarise_runs <- function(rundata, by = "trkname", dashboard = TRUE) {
   
   if (!dashboard) {
     
-    numdata_sum <- numdata %>% select_("monthBin", "Duration..seconds.", "Distance..km.", 
+    numdata_sum <- numdata %>% select("monthBin", "Duration..seconds.", "Distance..km.", 
                                        "Calories.Burned", "Climb..m.", "elevation") %>% 
       group_by_("monthBin") %>% 
       summarise_each_(funs(sum), vars = lazyeval::interp(~everything()))
@@ -123,7 +123,7 @@ summarise_runs <- function(rundata, by = "trkname", dashboard = TRUE) {
       output$plot1 <- renderPlot({
         if (input$window == "monthly") {
           numdata_sum <- numdata %>% filter_(~Year == input$slider) %>% 
-            select_("monthBin", "Duration..seconds.", "Distance..km.", 
+            select("monthBin", "Duration..seconds.", "Distance..km.", 
                     "Calories.Burned", "Climb..m.", "elevation") %>% 
             group_by_("monthBin") %>% 
             summarise_each_(funs_(input$fn), 
@@ -143,7 +143,7 @@ summarise_runs <- function(rundata, by = "trkname", dashboard = TRUE) {
                           y = paste0(input$fn,"(Value)"))
         } else if (input$window == "daily") {
           numdata_sum <- numdata %>% filter_(~Year == input$slider) %>% 
-            select_("yday", "Duration..seconds.", "Distance..km.", "Calories.Burned", 
+            select("yday", "Duration..seconds.", "Distance..km.", "Calories.Burned", 
                     "Climb..m.", "elevation") %>% 
             group_by_("yday") %>% 
             summarise_each_(funs_(input$fn), 
